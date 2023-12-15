@@ -4,9 +4,7 @@
 
 
 # Introduction
-This repository provides electrical design, firmware and a Python class for a Linear CCD and Microcontroller.
-
-The electrical design uses a low noise dual opamp to condition and match the output of the sensor to the input range of the ADC.  The firmware provides clocked, triggered or gated data acquisition with a human parse-able command interface.  The Python source provides a command line and graphical interface and also functions as a Class library to facilitate using the sensor in other programs.   Further functionality in the firmware includes driving digial I/O pins to synchronize with other instruments, saving and retrieving coefficients such as might be used for the wavelength scale in a spectrometer and saving and retrieving records such as might be used in dark or photometric calibration.
+This repository provides electrical design, firmware and a Python class for a Linear CCD and Microcontroller that features low noise, high precision and high bandwidth with reproducible timing for trigger, gate and sync operations with a rich set of features to support spectrometry and imaging.  In the following we describe the electrical issues for interfacing a CCD and our solution for this board, and issues related to timing and photometrics with a CCD and our solution in firmware.  Finally we describe the human parseable API and our Python class library and utility for operating the device.
 
 While we use the Toshiba TCD 1340 and Teensy 4.x or 3.x, the principles are general and the design is easily adapted to other linear CCDs and other microcontrollers.
 I have made variations of this for several linear CCD's and used it in my own research.   If you would like one of these boards or a board with a different sensor, please contact me.
