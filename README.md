@@ -1,3 +1,8 @@
+![IMG_20231215_144019112_cropped](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/0b825c6f-6584-4565-b1d5-5b7807ac2ba0)
+
+![IMG_20231215_144047210_cropped](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/cc6f7c44-8199-4f15-96ff-d5c61e3457dc)
+
+
 # Introduction
 This repository provides electrical design, firmware and a Python class for a Linear CCD and Microcontroller.
 
