@@ -2,9 +2,7 @@
 
 
 # Introduction
-This repository provides electrical design, firmware and a Python class for a Linear CCD and Microcontroller that features low noise, high precision and high bandwidth with reproducible timing for trigger, gate and sync operations with a rich set of features to support experiments in spectrometry and imaging.  In the following we describe the electrical issues for interfacing a CCD and our solution for this board, and issues related to timing and photometrics with a CCD and our solution in firmware.  Finally we describe the human parseable API and our Python class library and utility for operating the device.
-
-While this repository provides files for designing, building and making use of a linear CCD based on the Toshiba TCD 1340 and Teensy 4.x or 3.x, the principles are general and the design is easily adapted to other linear CCDs and other microcontrollers.
+This repository provides electrical design, firmware and a Python class for a Linear CCD and Microcontroller that features low noise, high precision and high bandwidth with reproducible timing for trigger, gate and sync operations with a rich set of features to support experiments in spectrometry and imaging.  In the following we describe electrical and firmware designs for interfacing a CCD to a micontroller.  We set the device up with a human readable control interface (serial over USB with binary data transfer) and we provide a Python class library and utility for operating the device.  The design here uses a Toshiba TCD 1340 and Teensy 4.x or 3.x.  The design is easily adapted to other linear CCDs and microcontrollers.
 
 Following are some examples of how the device has been used.  The first a spectrometer build with a 1200 line prism.   The spectrum is that of Fluorescent ceiling lights.  Notice the  resolution is quite reasonable.  The input circuit helps the overall dynamic range for the sensor.
 
