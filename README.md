@@ -11,9 +11,9 @@ Following are some examples of how the device has been used.  The first a spectr
 |![IMG_20231217_120419719_cropped300](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/de198b21-05c3-4d13-88c1-3835d190116e) |![FluorescentLamp Screen500](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6d012101-5bae-4bd2-b496-b92bc3603f1b)|
 
 
-The following example uses the sensor device to record the time evolution of the spatial distribution of light produced by an OLED at low current  density.   The graph to the left shows the applied waveform in blue, the current flowing to the OLED in red, and a sync signal (low) aligned with each shutter interval in green.  Note that the klinetic series data is recorded with the OLED driven at just 23 uA/cm^2 of current density.
+The following example uses the sensor device to record the time evolution of the spatial distribution of light produced by an OLED at low current  density.
 
-|![GatedImages](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6fe39487-f4e0-41bb-8c49-dffe6716e681)|![sefigure](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/37f1105b-1cc1-45fa-8f51-5d2376b44fcb)|
+![sefigure](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/37f1105b-1cc1-45fa-8f51-5d2376b44fcb)
 
 
 
