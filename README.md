@@ -49,7 +49,32 @@ One final note on the front end circuit:  We mentioned above that we are going t
 
 Caveat:  The devices built prior to this use a ADA4896 and 2K in the feedback loop for a gain of 4.  This part has a smaller common mode range, 0.1V to 2.1V when powered at 3V, which is cutting it a bit close for our purposes.  The ADA4807 is available in the same footprint and has a common mode range that is essentially rail to rail.  Hence we are switching to the ADA4807 for new builds.
 
-# Timing, Triggering, Cleaning and all that.
+# Timing
+
+For overview and context, the basic operation of a typical CCD is that in each pixel charge is integrated proportional to photons pluse noise, until a shift operation transfers the charges to a register from where it is clocked to the output pin as a series of voltage levels.  Integration occurs during the period between shifts.  The TCD1304 adds one function, to allow readout following selected shift assertions. Thus, the TCD1304 takes 3 logic input signals, referred to in the data sheet as $\phi$M master clock, SH shift gate and ICG integration clear gate.  The internal structure is depicted as follows from page 3.   The terminology is somewhat confusing and not less so in the context of the diagram.   Nonetheless, integration occurs during the interval between sucessive trailing edges on the SH pin, and the shift to the readout register occurs with the assertion of the ICG pin.
+
+![TCD1304-registers](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1865363d-bbbe-4902-be47-285b8f0ef6f8)
+
+This can be seen in the following two figures from the datasheet which show how Toshiba envisions operation of the sensor chip.  As indicated, charge is integrated in each of the pixels during the intervals between trailing edges at the SH pin and at each assertion of the ICG pin the accumulated charges are shifted to the readout buffer and then clocked out on the output pin at a rate of 1 datum per four cycles of the master clock.
+
+![TCD1304-timing1](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/e0c361c6-3cdb-4eb6-9314-ea43b90607dd)
+
+![TCD1304-timing2](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/18aa49f5-0524-4cec-be0e-52a2ee25068b)
+
+Toshiba labels the second diagram above as "Electronic Shutter Function".  This refers to the function of ICG in selecting which SH interval is transferred to the readout buffer.  However it is not a shutter in the conventional sense.  It is easily shown experimentally that if the device is left idle, several SH cycles are needed to arrive at a noise baseline in the readout.   There are a number of commerical CCD systems that clock the SH pin or its equivalent to keep the sensor "clean".  This is has ramification if the device is to be triggered, for example for kinetic studies.
+
+In practice, we find that the clock, SH and ICG pins can be driven using logic gates or by the TCD1304 directly with equal reliability.  For cost and space we drive directly in the present example.  It is straightforward to add a quad logic gate to the design if you wish.
+
+Toshiba further specifies timing requirements for the ICG and SH pins relative to each other and the master clock, in the following diagram from page 9 of the datasheet.
+
+![TCD1304-timingreqs](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6256bbf6-0993-47ce-8623-0f77907d3063)
+
+With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum rate, that is the time between readouts.  The integration time, the interval between SH assertions can be much shorter.
+
+For triggered and gated readout, we initiate the SH and ICG clocks from an interrupt handler.  There are two modes for a kinetic series, short shutter relative to frame readout interval and shutter interval equal to readout interval so that frames are acuired back to back.
+
+# Data processing
+Referring to the clock diagrans above, we see taht the data record comprises 12 dummy outputs followed by 13 light shielded elements, followed by 3 shadowed elements, followed by the 3648 elements making up the effective output and followed by another 14 dummy elements.   Thus elements 12 thru 24 provide a baseline which we can average or take the median and subtract from elements 28 through 2675 which form the image.   In the spirit of "always preserve primary data", we do not do this substraction nor any scaling, in firmware.  Rather we pass the entire record as is, to the PC host and the host software is responsible for subtracting and scaling as appropriate.
 
 # Firwmare
 
