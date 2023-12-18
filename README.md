@@ -35,7 +35,7 @@ For completeness, we mention that we could instead just amplify and shift, like 
 
 ![SimpleSchematic2](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1cbbdc91-9d4a-4894-bc4e-5f4fc0f7d283)
 
-Therefore, in view of the above, we choose the first option.  But, for the TCD1304, this means we need to insert a follower between the sensor and our flip,shift,amplify circuit so that the output impedance of the sensor does not effect our gain.  A dual opamp package makes this convenient and cost effective.  So now that we know where we are going, it is time to get specific.
+Therefore, in view of the above, we choose the first option.  But, for the TCD1304, this means we need to insert a follower between the sensor and our flip,shift,amplify circuit so that the output impedance of the sensor does not effect our gain.  But, a dual opamp package makes this convenient and cost effective.
 
 Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and the data readout rate is 1/4 of the clock 200kS/s to 1MS/s. This means we can power our circuit and the TCD13904 from the well conditioned 3.3V supply provided by the Teensy 3.x and Teensy 4.xm and the onboard ADC can keep up with the required datarate.  But to do that we need a rail to rail opamp with a wide common mode range to accomodate our offset voltage and a bandwidth substantially greater than our datarate. 
 
