@@ -15,10 +15,14 @@ The following example uses the sensor device to record the time evolution of the
 
 Okay, with the above, I hope that I have convinced you that this not just a nifty little sensor device, but that it is actually a professional grade instrument and that you can do good science with it.  For more good news, it turns out that it is not very expensive.  This repository provides what you need in terms of ecad files and software to build one for yourself, or if you like you can contact me for an assembled board.
 
-
-
-
 # Electrical
+We start with the datasheet for the TCD1304, which can be found here  https://toshiba.semicon-storage.com/us/semiconductor/product/linear-image-sensors/detail.TCD1304DG.html.
+The following table is found on page 4.   We see that $V_{SAT}$ the saturation output volage runs from 450mV to 600mV, $V_{MDK}$ the dark signal is 2mV, thus a dynamic range of 300 (for a given integration integral), $V_{OS}$ the DC output signal is typically 2.5V but can be from 1.5V to 3.5V, and $Z_O$ the output impedance is typically 500 ohms but can be 1K.  So that is a lot of variation that we need to account for in our design.
+
+![TCD1304-optical-electrical](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/7c0a2a66-d456-45e5-9f44-d4f6856260c5)
+
+
+
 
 # Timing
 
