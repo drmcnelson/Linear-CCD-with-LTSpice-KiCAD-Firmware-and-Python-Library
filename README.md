@@ -37,7 +37,7 @@ For completeness, we mention that we could instead just amplify and shift, like 
 
 Therefore, in view of the above, we choose the first option.  But, for the TCD1304, this means we need to insert a follower between the sensor and our flip,shift,amplify circuit so that the output impedance of the sensor does not effect our gain.  But, a dual opamp package makes this convenient and cost effective.
 
-Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, it requires a clock between 800KHz and 4MHz and the data readout rate is 1/4 of the clock 200kS/s to 1MS/s. This means we can power our circuit and the TCD1304 from the well conditioned 3.3V supply provided by the Teensy 3.x or Teensy 4.xm and in either microntroller, the onboard ADC can keep up with the required datarate.  But to do that we need a rail to rail opamp with a wide common mode range to accomodate our offset voltage and a bandwidth substantially greater than our datarate. 
+Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, it requires a clock between 800KHz and 4MHz and the data readout rate is 1/4 of the clock 200kS/s to 1MS/s. This means we can power our circuit and the TCD1304 from the well conditioned 3.3V supply provided by the Teensy 3.x or Teensy 4.xm and in either microntroller, the onboard ADC can keep up with the required datarate.  But to do that we need a rail to rail opamp with a wide common mode range to accomodate our offset voltage and a bandwidth substantially greater than our datarate.   We save cost and real-estate on the board by using the 3.3V supply.  This is a convenience of the TCD1304 relative to some other linear CCDs.
 
 The following LTSpice model based on the ADA4807 seems to meet our goals.  We use the first opamp in the package for the follower and the second opamp for the flip.shift,amplify circuit with gain and offset as calculated above.  The green trace is the output from the sensor and the purple curve is the output from the second stage.  As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC.  In our actual circuit we use a trim pot for the voltage applied to V+.
 
@@ -49,6 +49,7 @@ One final note on the front end circuit:  We mentioned above that we are going t
 
 Caveat:  The devices built prior to this use a ADA4896 and 2K in the feedback loop for a gain of 4.  This part has a smaller common mode range, 0.1V to 2.1V when powered at 3V, which is cutting it a bit close for our purposes.  The ADA4807 is available in the same footprint and has a common mode range that is essentially rail to rail.  Hence we are switching to the ADA4807 for new builds.
 
+# Timing, Triggering, Cleaning and all that.
 
 # Firwmare
 
