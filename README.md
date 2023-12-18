@@ -25,7 +25,15 @@ To understand what is meant by $V_{OS}$ and the saturation and dark signal level
 
 ![TCD1304-electrical-note8](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ceaa5288-26fd-4485-ae8d-bf512b9fe894)
 
-This means that we need to match a signal that runs from 2.5V to 1.9V (nominally(, to our micocontroller's ADC input which digitizes voltages in the range from 0 to 3.3V.  If we simply feed the signal from the TCD1304 straignt to the ADC we loose bits and unleash a number of other electrical issues.  Instead, to make best use of the ADC, we want to flip, shift and amplify the output from the sensor to match the input range of the ADC.   Additionally, we need to accomodate the variation in output impedance and $V_{OS}, and finally since most micocontrollers use successive approximation ADC's, we need to  account for the kickback with an appropriate RC at the output of our instrumentation grade front end.  There are a number of application notes about driving SAR ADC's, for example https://www.analog.com/en/analog-dialogue/articles/front-end-amp-and-rc-filter-design.html.  Mictrocontroller manufacturers have also published application notes, perhaps in an effort to end the scurge of supposedly flakey ADCs.
+This means that we need to match a signal that runs from 2.5V to 1.9V (nominally(, to our micocontroller's ADC input which digitizes voltages in the range from 0 to 3.3V.  If we simply feed the signal from the TCD1304 straignt to the ADC we loose bits and unleash a number of other electrical issues.  Instead, to make best use of the ADC, we want to flip, shift and amplify the output from the sensor to match the input range of the ADC.   Additionally, we need to accomodate the variation in output impedance and $V_{OS}, and finally since most micocontrollers use successive approximation ADC's, we need to  account for the kickback with an appropriate RC at the output of our instrumentation grade front end.  There are a number of application notes about driving SAR ADC's, for example https://www.analog.com/en/analog-dialogue/articles/front-end-amp-and-rc-filter-design.html.
+
+We can take care of matching the output of the linear CCD to the input range of the ADC in one step as follows:
+
+![IMG_20231218_004253086 cropped500](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ba343bf5-6030-457e-a83b-3acda9b8e0ff)
+
+The following LTSpice model shows our overal circuit starting with an emitter follower to take care of the 500ohm to 1K range for the output impedance of the CCD.  We use the gain and offset from the above, and we see that the output matches our calculation.  In the actual device we will use a trim pot for the voltage applied to V+.
+
+![Screenshot from 2023-12-18 01-02-20](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/90cde5e8-e23e-47bf-9be0-6a24832e6f79)
 
 
 
