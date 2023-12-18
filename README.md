@@ -65,7 +65,7 @@ Toshiba labels the second diagram above as "Electronic Shutter Function".  This 
 
 In practice, we find that the clock, SH and ICG pins can be driven using logic gates or by the TCD1304 directly with equal reliability.  For cost and space we drive directly in the present example.  It is straightforward to add a quad logic gate to the design if you wish.
 
-Toshiba further specifies timing requirements for the ICG and SH pins relative to each other and the master clock, in the following diagram from page 9 of the datasheet.
+Toshiba further specifies timing requirements for the ICG and SH pins relative to each other and the master clock, in the following diagram from page 9 of the datasheet.  Note that this sets a minimum shutter period since the fastest shutter is between two trailing edges at the SH pin.
 
 ![TCD1304-timingreqs](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6256bbf6-0993-47ce-8623-0f77907d3063)
 
