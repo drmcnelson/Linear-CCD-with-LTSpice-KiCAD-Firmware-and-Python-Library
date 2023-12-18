@@ -77,5 +77,14 @@ For triggered and gated readout, we initiate the SH and ICG clocks from an inter
 Referring to the clock diagrans above, we see that the data record comprises 12 dummy outputs followed by 13 light shielded elements, followed by 3 shadowed elements, followed by the 3648 elements making up the effective output and followed by another 14 dummy elements.   Thus elements 12 thru 24 provide a baseline which we can average or take the median and subtract from elements 28 through 2675 which form the image.   In the spirit of "always preserve primary data", we do not do this substraction nor any scaling, in firmware.  Rather we pass the entire record as is, to the PC host and the host software is responsible for subtracting and scaling as appropriate.
 
 # Firwmare
+The firmware subdirectory contains a sketch for Teensy 4.0.  After assembling your board (or obtaining one from this author), you can mount your Teensy 4 and TCD1304 detector, and then flash the program into the Teensy 4.0.   The commands are in english, ASCII over USB.  The default action returns the data in binary.  There are three reserved pins for trigger or gate input, and sync and gate output.  There is a fourth spare pin and three spare analog input pins.   A listing of the help text is included in the Python subdirectory.
+
+You will ideally want to use a multi-threaded program on your host computor, with one thead reading the responses and data and queuing as appropriate to a separate graphics thread.
 
 # Python
+The Python subdirectory contains a file TCD1304Rev2Controller.py and three library files that it looks for in its directory.  The program implements threads using the multitasking interface in Linux.  A dedicated thread reads the responses from the device and queues data to an internal data queue for the "save" command and to a queue read by the runtime graphics thread.
+
+# Adjusting the offset
+With a voltmeter or scope, the middle pin on the trim pot should be set close to 2.1 volts.  Then in the Python program, issue the commands "baseline off" and "clock 1000 10000 100000".   This wil turn off the baseline subtraction function and clock 1000 frames with an integration time of 10ms spaced at intervals of 100ms.   Try the commands "stop", "baseline on" and repeat the clock command to see a comparison.  You can zoom in on the graphical display and use a small screwdriver to adjust the offset.   I usually put the sensor in a drawer or cover it with a black cloth while I do this.
+
+Apologies for short text on the last two items.  Will fill in details in a subsequent post.
