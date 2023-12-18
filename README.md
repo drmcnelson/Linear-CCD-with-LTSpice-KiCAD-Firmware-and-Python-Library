@@ -87,4 +87,4 @@ The Python subdirectory contains a file TCD1304Rev2Controller.py and three libra
 # Adjusting the offset
 With a voltmeter or scope, the middle pin on the trim pot should be set close to 2.1 volts.  Then in the Python program, issue the commands "baseline off" and "clock 1000 10000 100000".   This wil turn off the baseline subtraction function and clock 1000 frames with an integration time of 10ms spaced at intervals of 100ms.   Try the commands "stop", "baseline on" and repeat the clock command to see a comparison.  You can zoom in on the graphical display and use a small screwdriver to adjust the offset.   I usually put the sensor in a drawer or cover it with a black cloth while I do this.
 
-Apologies for short text on the last two items.  Will fill in details in a subsequent post.
+Apologies for short text on the firmware and python command sets.   See help and source code.  Will fill in details in a subsequent post.
