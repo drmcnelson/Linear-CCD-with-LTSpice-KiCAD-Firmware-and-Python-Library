@@ -21,6 +21,11 @@ The following table is found on page 4.   We see that $V_{SAT}$ the saturation o
 
 ![TCD1304-optical-electrical](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/7c0a2a66-d456-45e5-9f44-d4f6856260c5)
 
+To understand what is meant by $V_{OS}$ and the saturation and dark signal levels, we have the following diagram from note 8.  $V_{OS}$  is the baseline and SS is ground.
+
+![TCD1304-electrical-note8](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ceaa5288-26fd-4485-ae8d-bf512b9fe894)
+
+This means that we need to match a signal that runs from 2.5V to 1.9V (nominally(, to our micocontroller's ADC input which digitizes voltages in the range from 0 to 3.3V.  If we simply feed the signal from the TCD1304 straignt to the ADC we loose bits and unleash a number of other electrical issues.  Instead, to make best use of the ADC, we want to flip, shift and amplify the output from the sensor to match the input range of the ADC.   Additionally, we need to accomodate the variation in output impedance and $V_{OS}, and finally since most micocontrollers use successive approximation ADC's, we need to  account for the kickback with an appropriate RC at the output of our instrumentation grade front end.  There are a number of application notes about driving SAR ADC's, for example https://www.analog.com/en/analog-dialogue/articles/front-end-amp-and-rc-filter-design.html.  Mictrocontroller manufacturers have also published application notes, perhaps in an effort to end the scurge of supposedly flakey ADCs.
 
 
 
