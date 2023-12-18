@@ -35,7 +35,7 @@ The following LTSpice model shows our overal circuit starting with an opamp foll
 
 ![Screenshot from 2023-12-18 01-02-20](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/90cde5e8-e23e-47bf-9be0-6a24832e6f79)
 
-So, with the above, a simple follower, followed by a single opamp stage to flip,shift and amplify, we are using nearly the entire range of the ADC to digitize the output from our linear CCD.   It might be noted that we could have chosen a larger gain and still have a feasible value of V+.
+So, with the above, a dual opamp with one stage used as a follower and the second to flip,shift and amplify, we fill nearly the entire range of the ADC with the output from the  linear CCD.   It might be noted that we could have chosen a larger gain to look at lower intensity light and still have a feasible value of V+.
 
 # Firwmare
 
