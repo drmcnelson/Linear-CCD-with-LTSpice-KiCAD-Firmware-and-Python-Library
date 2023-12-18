@@ -39,6 +39,8 @@ The following LTSpice model based on the ADA4807 seems to meet our goals.  We us
 
 It might be noted that we could have chosen a larger gain to look at lower intensity light and still have a feasible value of V+.
 
+One final note on the front end circuit:  We mentioned above that we are going to be driving a SAR ADC and that there is a charge kickback associated with the first sample.  In our circuit design, we have an optional 1nf capacitor to ground after the output resistor to take care of the kickback.
+
 Caveat:  The devices built prior to this use a ADA4896 and 2K in the feedback loop for a gain of 4.  This part has a smaller common mode range, 0.1V to 2.1V when powered at 3V, which is cutting it a bit close for our purposes.  The ADA4807 is available in the same footprint and has a common mode range that is essentially rail to rail.  Hence we are switching to the ADA4807 for new builds.
 
 
