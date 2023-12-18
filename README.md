@@ -31,13 +31,11 @@ We can take care of matching the output of the linear CCD to the input range of 
 
 ![IMG_20231218_004253086 cropped500](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ba343bf5-6030-457e-a83b-3acda9b8e0ff)
 
-The following LTSpice model shows our overal circuit starting with an emitter follower to take care of the 500ohm to 1K range for the output impedance of the CCD. The green trace is the output from the emitter follower, essentially identical to that from the linear CCD. The purple curve is the output from our second stage.   Note that we use the gain and offset from the above, and the output matches our calculation.  In the actual device we will use a trim pot for the voltage applied to V+.
+The following LTSpice model shows our overal circuit starting with an opamp follower to take care of the 500ohm to 1K range for the output impedance of the CCD. The green trace is the output from the emitter follower, essentially identical to that from the linear CCD. The purple curve is the output from our second stage.   Note that we use the gain and offset from the above, and the output matches our calculation.  In the actual device we will use a trim pot for the voltage applied to V+.
 
 ![Screenshot from 2023-12-18 01-02-20](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/90cde5e8-e23e-47bf-9be0-6a24832e6f79)
 
-
-
-# Timing
+So, with the above, a simple follower, followed by a single opamp stage to flip,shift and amplify, we are using nearly the entire range of the ADC to digitize the output from our linear CCD.   It might be noted that we could have chosen a larger gain and still have a feasible value of V+.
 
 # Firwmare
 
