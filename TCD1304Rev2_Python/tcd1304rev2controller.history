@@ -1,0 +1,10 @@
+version
+read 10000
+read 100000
+clock 1000 100000
+stop
+q
+help
+q
+clock 10 100000
+q

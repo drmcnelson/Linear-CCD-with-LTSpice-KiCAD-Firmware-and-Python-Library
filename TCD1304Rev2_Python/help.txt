@@ -1,0 +1,133 @@
+Report device, version and configuration
+  version           - report software version
+  configuration     - report device configuration and data structure
+  pins              - report digital i/o functions and pin numbers
+
+Stop clocked and interrupt driven reads and the idler
+  stop              - stop clocks, triggers, gate.
+  stop idle[r]      - stop the idler.
+  stop all          - stop all, including the idler
+
+Coefficients for pixel number to wwavelength
+  store coefficients <a0> <a1> <a2> <a3>
+  coefficients       - report
+
+Response function coefficients
+  store response <a0> <a1> <a2> <a3>
+  response       - report
+
+Save/recall dark and response spectra
+  save dark|resp      - save current buffer as dark or response
+  recall dark|resp    - and send it to the host
+
+  upload int|float    - followed by values one per line from the host
+
+  save filename       - save from current buffer to internal file
+  recall filename     - read from internal file to current buffer and send
+
+Select current working buffer from the buffer ring
+  select buffer n     - select/report current buffer by number
+  send                - send contents of the current buffer
+
+Identifier string (63 bytes)
+  store <identifier>
+  identifier         - list identifier string
+
+Data format
+  set ascii          - set data format to ascii
+  set binary         - set data format to binary
+  format             - report data form
+
+Microcontroller temperature
+  temperature        - report microcontroller temperature
+
+Read and average analog inputs
+  adcs <navgs>        - read analog inputs and report
+  set adcs <navgs>    - read ADCs at frame completion
+  set adcs off
+
+Read, manual loop, <shutter>, <frame> in usecs:
+  clock <shutter>               read one frame
+  clock <n> <shutter>           read n frames
+  clock <n> <shutter> <frame>   read n framns
+
+Clock frames or sets of frames, with <shutter>, <frame>, and <outer> in usecs:
+  clock <shutter>               read one frame
+  clock <n> <shutter>           read n frames
+  clock <n> <shutter> <frame>   read n framns
+  clock <m> <outer> <n> <shutter>
+  clock <m> <outer> <n> <shutter> <frame>
+
+Trigger clocked frames:
+  trigger <shutter>                  trigger one frame
+  trigger <n> <shutter>              trigger n times, single frames
+  trigger <m> <n> <shutter>          trigger m times, n frames each, frame=shutter
+  trigger <m> <n> <shutter> <frame>  trigger m sets of n frames
+
+For gate frames (shutter opens and closes on change
+  gate <n>            - gate n frames, default to 1
+
+  set trigger rising
+  set trigger falling
+  set trigger change
+
+  set trigger pullup           set trigger input to pullup
+  clear trigger pullup
+
+Latched frames, send only with increasing maximum
+  latch
+  latch <pixel>
+  clear latch
+
+  set holdoff usecs
+  clear holdoff
+
+Sync pin output at frame start, shutter or holdoff
+  set sync shutter
+  set sync start
+  set sync holdoff [usecs]
+  set sync off
+  clear sync
+
+Pin control, sync and busy are toggled with the shutters
+  set spare|sync|busy hi
+  set spare|sync|busy lo
+  pulse spare|sync|busy [usecs]
+  toggle spare|sync|busy
+
+Idler
+  set idler off      - set idler off/auto/time spec
+  set idler auto
+  set idler <usecs>
+
+Pulse width modulation - spare pin
+  pwm <bits> <binary_value>
+  pwm off
+
+Preconfigured pins
+  Trigger(input)2  Busy 1  Sync 0  Spare 3
+  
+Commands implemented in the CLI/host computer:
+   h|help                      - produces this help text
+
+   accumulator on | off        - turn frame-wise accumulator on/off in the reader thread
+   baseline on | off           - turn basline correction on/off
+
+   add init                    - initialize the local accumulators
+   add                         - get and add the contents of the data queue to the local accumulators
+   add push                    - push the local accumulators onto the dataqueue for the save command
+
+   save fileprefix comments... - save data to diskfile
+   wait                        - wait for completion of the active frameset
+
+   @filespec                   - read and execute commands from a file
+      in batch files,';' is a command separator, use \; to escape for shell commands
+
+   !command                    - execute shell command
+
+   a = 3                       - '=' causes evaluation as python
+   = python statement          -  pass to python interprator
+      these commands have access to local() and class name spaces
+
+   q[uit]                      - exit the cli program
+
