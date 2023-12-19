@@ -96,11 +96,11 @@ The following shows the actual operation of the sensor device, green is SH, purp
 ![Scope-singleframe](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/611557d1-e55c-48d0-b26d-84dc9b8b2dfe)
 
 ## Triggered and gated operation
-The following shows a triggered frame.  The commands are "set trigger rising", "trigger 20" to trigger one 20usec frame.
+The following shows a triggered frame.  The commands are "set trigger rising", "trigger 20" to trigger one 20usec frame.  The blue line is the trigger input.  There is a small reproducible delay between the trigger and the shutter, due to certain fixed timings involved in getting the shutter started.  Notice the alignment of the BUSY and SH signals.
 
 ![Scope-triggerd](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/9310338d-311b-468d-9891-1daa79e466c9)
 
-The following shows a gated frame.  The commands are "set trigger change", "gate 1", to gate one frame.  For this, the spare pin is connected to the trigger input and we enter the command "pulse spare 20" to output a 20 usec pulse.  As you can see the shutter sequence begins and finishes with the gate.
+The following shows a gated frame, blue is the gate signal.  The commands are "set trigger change", "gate 1", to gate one frame.  For this, the spare pin is connected to the trigger input and we enter the command "pulse spare 20" to output a 20 usec pulse.  As you can see the shutter sequence begins and finishes with the gate.
 
 ![Scope-gated](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/5682114e-f9e4-41eb-b6de-08bfdad62288)
 
