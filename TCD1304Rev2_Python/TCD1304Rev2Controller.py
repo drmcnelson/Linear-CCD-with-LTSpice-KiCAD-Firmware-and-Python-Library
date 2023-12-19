@@ -1860,6 +1860,10 @@ if __name__ == "__main__":
     
     # ---------------------------------------------------------
 
+    sleep(1)
+    print( "" )
+    print( versionstring )
+    
     serialdevice.commandloop( name="LCCD", fileprefix=None )
 
     serialdevice.close()
