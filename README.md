@@ -80,11 +80,11 @@ The following diagram shows a sequence where we have shutter interval shorter th
 
 That said, there are scenarios where the shutter is somewhat simpler.  The following shows back shutters with identical frame and shutter intervals.
 
-![Shutter-Operation-longshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/4ec16fdd-a333-4e2e-96b6-36e085e8aacd)
+![Shutter-Operation-longshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ff287173-09d6-4ee7-a6b2-3ac014f4b3f3)
 
 And this one shows a constant shutter interval with the frame interval an integer multiple of the shutter.
 
-![Shutter-Operation-modalshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/0ea90c9b-ef00-4b96-9240-8bd17505cc7e)
+![Shutter-Operation-modalshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/040c281e-0778-4aa0-9e86-23f334caaec4)
 
 Our logic for operating the device has to accomodate all three scenarios, and be able to launch them from a trigger or simply clock them on command from the user.  Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various comobinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
 
