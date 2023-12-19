@@ -49,7 +49,7 @@ One final note on the front end circuit:  We mentioned above that we are going t
 
 Caveat:  The devices built prior to this use a ADA4896 and 2K in the feedback loop for a gain of 4.  This part has a smaller common mode range, 0.1V to 2.1V when powered at 3V, which is cutting it a bit close for our purposes.  The ADA4807 is available in the same footprint and has a common mode range that is essentially rail to rail.  Hence we are switching to the ADA4807 for new builds.
 
-# Timing
+# CCD operation
 
 For overview and context, the basic operation of a typical CCD is that in each pixel charge is integrated proportional to photons pluse noise, until a shift operation transfers the charges to a register from where it is clocked to the output pin as a series of voltage levels.  Integration occurs during the period between shifts.  The TCD1304 adds one function, to allow readout following selected shift assertions. Thus, the TCD1304 takes 3 logic input signals, referred to in the data sheet as $\phi M$ master clock, SH shift gate and ICG integration clear gate.  The internal structure is depicted as follows from page 3.   The terminology is somewhat confusing and not less so in the context of the diagram.   Nonetheless, integration occurs during the interval between sucessive trailing edges on the SH pin, and the shift to the readout register occurs with the assertion of the ICG pin.
 
@@ -71,7 +71,22 @@ Toshiba further specifies timing requirements for the ICG and SH pins relative t
 
 With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum rate, that is the time between readouts.  The integration time, the interval between SH assertions can be much shorter.
 
-For triggered and gated readout, we initiate the SH and ICG clocks from an interrupt handler.  There are two modes for a kinetic series, short shutter relative to frame readout interval and shutter interval equal to readout interval so that frames are acuired back to back.
+## Shutter, frames and timing for data acquisition.
+For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to control timing with respect to an external trigger or gate.   For purposes of understanding our requirements we can focus on the SH pin since the shutter or integration interval is defined by successive assertions of this input.
+
+The following diagram shows a sequence where we have shutter interval shorter than the inter frame interval, and the frame interval is not necessarily some integer number of shutter intervals in length.  This immediately removes us from the scenario where we simply run the SH line on a single clock, as does our requirements for triggering or gating the CCD with reproducible timing. If we want to do science with a CCD, and even moreso if we want to knietics, we need to think about SH a little differently.   
+
+![Shutter-Operation-shortshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/2f8c72b0-5ce8-4873-b6db-025a604f5a09)
+
+That said, there are scenarios where the shutter is somewhat simpler.  The following shows back shutters with identical frame and shutter intervals.
+
+![Shutter-Operation-longshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/4ec16fdd-a333-4e2e-96b6-36e085e8aacd)
+
+And this one shows a constant shutter interval with the frame interval an integer multiple of the shutter.
+
+![Shutter-Operation-modalshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/0ea90c9b-ef00-4b96-9240-8bd17505cc7e)
+
+Our logic for operating the device has to accomodate all three scenarios, and be able to launch them from a trigger or simply clock them on command from the user.  Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various comobinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
 
 # Data processing
 Referring to the clock diagrans above, we see that the data record comprises 12 dummy outputs followed by 13 light shielded elements, followed by 3 shadowed elements, followed by the 3648 elements making up the effective output and followed by another 14 dummy elements.   Thus elements 12 thru 24 provide a baseline which we can average or take the median and subtract from elements 28 through 2675 which form the image.   In the spirit of "always preserve primary data", we do not do this substraction nor any scaling, in firmware.  Rather we pass the entire record as is, to the PC host and the host software is responsible for subtracting and scaling as appropriate.
