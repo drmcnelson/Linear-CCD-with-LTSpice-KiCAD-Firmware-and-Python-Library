@@ -88,6 +88,14 @@ And this one shows a constant shutter interval with the frame interval an intege
 
 Our logic for operating the device has to accomodate all three scenarios, and be able to launch them from a trigger or simply clock them on command from the user.  Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various comobinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
 
+## Signals, Sync and Busy
+The sensor device has a trigger input and two outputs SYNC and BUSY.  Sync can be configured to signal the start of a series of frames or to signal the start of each shutter.  SYNC can also be configured to be followed by a holdoff.  BUSY is set with the start of the first shutter and remains asserted until the last data transfer is complete.   Each pin can be set nominally HIGH or LOW, assertion is the opposite.  Additiionall there is a SPARE pin.  Any of the pins can be manually set, cleared, toggled or pulsed.
+
+The following shows the actual operation of the sensor device, green is SH, purple is ICG, blue is SYNC and yellow is BUSY.  We see BUSY goes high immediately, SH and ICG operate as described in the data sheet.  Light is integrated between the two trailing edges and the data is transferred following the second assertion of the SH and clearing of the ICG pins.
+
+![Scope-singleframe](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/611557d1-e55c-48d0-b26d-84dc9b8b2dfe)
+
+
 # Data processing
 Referring to the clock diagrans above, we see that the data record comprises 12 dummy outputs followed by 13 light shielded elements, followed by 3 shadowed elements, followed by the 3648 elements making up the effective output and followed by another 14 dummy elements.   Thus elements 12 thru 24 provide a baseline which we can average or take the median and subtract from elements 28 through 2675 which form the image.   In the spirit of "always preserve primary data", we do not do this substraction nor any scaling, in firmware.  Rather we pass the entire record as is, to the PC host and the host software is responsible for subtracting and scaling as appropriate.
 
