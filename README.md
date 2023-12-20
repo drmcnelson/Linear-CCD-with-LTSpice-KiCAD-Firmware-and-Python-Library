@@ -79,7 +79,7 @@ The following diagram shows a sequence where we have shutter interval shorter th
 
 ![Shutter-Operation-shortshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/2f8c72b0-5ce8-4873-b6db-025a604f5a09)
 
-That said, there are scenarios where the shutter is somewhat simpler.  The following shows back shutters with identical frame and shutter intervals.
+That said, there are scenarios where the shutter is somewhat simpler.  The following shows back to back shutters with identical frame and shutter intervals.
 
 ![Shutter-Operation-longshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ff287173-09d6-4ee7-a6b2-3ac014f4b3f3)
 
