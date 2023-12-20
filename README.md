@@ -64,7 +64,7 @@ This can be seen in the following two figures from the datasheet which show how 
 
 Toshiba labels the second diagram above as "Electronic Shutter Function".  This refers to the function of ICG in selecting which SH interval is transferred to the readout buffer.  However it is not a shutter in the conventional sense.  It is easily shown experimentally that if the device is left idle, several SH cycles are needed to arrive at a noise level baseline in the readout.   There are a number of commerical CCD systems that clock the SH pin or its equivalent to keep the sensor "clean".  This can have important ramifications if the device is to be triggered, for example for kinetic studies.   Alternatives include good "dark" management, designing the experiment to start with a few blank frames to clear the sensor, and/or having the device initiate the trigger.
 
-In practice, we find that the clock, SH and ICG pins can be driven using logic gates or by the TCD1304 directly with equal reliability.  For cost and space we drive directly in the present example.  It is straightforward to add a quad logic gate to the design if you wish.
+In practice, we find that the clock, SH and ICG pins can be driven using logic gates or by the Teensy directly with equal reliability.  For cost and space we drive directly in the present example.  It is straightforward to add a quad logic gate to the design if you wish.
 
 Toshiba further specifies timing requirements for the ICG and SH pins relative to each other and the master clock, in the following diagram from page 9 of the datasheet.  Note that this sets a minimum shutter period since the fastest shutter is between two trailing edges at the SH pin.
 
