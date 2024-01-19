@@ -77,7 +77,7 @@ With a 2MHz master clock, it takes about 7.4ms to read one record from the devic
 ## Shutter, frames and timing for data acquisition.
 For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to control timing with respect to an external trigger or gate.   For purposes of understanding our requirements we can focus on the SH pin since the shutter or integration interval is defined by successive assertions of this input.
 
-The following diagram shows a sequence where we have shutter interval shorter than the inter frame interval, and the frame interval is not necessarily some integer number of shutter intervals in length.  This immediately removes us from the scenario where we simply run the SH line on a single clock, as does our requirements for triggering or gating the CCD with reproducible timing. If we want to do science with a CCD, and even moreso if we want to knietics, we need to think about SH a little differently.   
+The following diagram shows a sequence where the shutter interval is shorter than the inter frame interval, and the frame interval is not necessarily an integer number of shutter intervals in length.  This removes us from the scenario where we simply run the SH line on a single clock, as does our requirements for triggering or gating the CCD with reproducible timing.
 
 ![Shutter-Operation-shortshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/2f8c72b0-5ce8-4873-b6db-025a604f5a09)
 
@@ -89,7 +89,8 @@ And this one shows a constant shutter interval with the frame interval an intege
 
 ![Shutter-Operation-modalshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/040c281e-0778-4aa0-9e86-23f334caaec4)
 
-Our logic for operating the device has to accomodate all three scenarios, and be able to launch them from a trigger or simply clock them on command from the user.  Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various comobinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
+Our control logic for operating the device has to accomodate all three scenarios, and we have to be able to initiate frames or sets of frames from a clock or from a trigger.
+Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various comobinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
 
 ## Signals, Sync and Busy
 The sensor device has a trigger input and two outputs SYNC and BUSY.  Sync can be configured to signal the start of a series of frames or to signal the start of each shutter.  SYNC can also be configured to be followed by a holdoff.  BUSY is set with the start of the first shutter and remains asserted until the last data transfer is complete.   Each pin can be set nominally HIGH or LOW, assertion is the opposite.  Additiionall there is a SPARE pin.  Any of the pins can be manually set, cleared, toggled or pulsed.
