@@ -49,15 +49,16 @@ The following LTSpice model based on the ADA4807 seems to meet our goals.  We us
 
 ![Screenshot from 2023-12-18 08-43-01](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/b380a297-6e34-4aad-a0bb-7b30448e554a)
 
-It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 the signal can be expanded using its built-in amplifier, provided the offset is small.
+It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 we can use its built-in amplifier under software control, provided the offset is small.
 
 # CCD operation
 
-For overview and context, the basic operation of a typical CCD is that in each pixel charge is integrated proportional to photons pluse noise, until a shift operation transfers the charges to a register from where it is clocked to the output pin as a series of voltage levels.  Integration occurs during the period between shifts.  The TCD1304 adds one function, to allow readout following selected shift assertions. Thus, the TCD1304 takes 3 logic input signals, referred to in the data sheet as $\phi M$ master clock, SH shift gate and ICG integration clear gate.  The internal structure is depicted as follows from page 3.   The terminology is somewhat confusing and not less so in the context of the diagram.   Nonetheless, integration occurs during the interval between sucessive trailing edges on the SH pin, and the shift to the readout register occurs with the assertion of the ICG pin.
+Operationally, a CCD sensor stores charge proprotional to light and noise, in each pixel, until assertion of a shift pin causes the contents to be shifted to a buffer, which is then shifted to the output by a clock and the contents appear as a series of voltages.  The TCD1304 has an additional function that allows readout following selected shift assertions.
+The internal structure is depicted as follows from page 3.  Externally the device is controlled by three pins, shift SH, integration clear gate ICG, and master clock $\phi M$.
 
 ![TCD1304-registers](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1865363d-bbbe-4902-be47-285b8f0ef6f8)
 
-This can be seen in the following two figures from the datasheet which show how Toshiba envisions operation of the sensor chip.  As indicated, charge is integrated in each of the pixels during the intervals between trailing edges at the SH pin and at each assertion of the ICG pin the accumulated charges are shifted to the readout buffer and then clocked out on the output pin at a rate of 1 datum per four cycles of the master clock.
+The following two figures from the datasheet show how Toshiba envisions operation of the sensor chip.  As indicated, charge is integrated during the intervals between trailing edges at the SH pin. At each assertion of the ICG pin the accumulated charges are shifted to the readout buffer and then shifted to the output pin at a rate of 1 datum per four cycles of the master clock.
 
 ![TCD1304-timing1](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/e0c361c6-3cdb-4eb6-9314-ea43b90607dd)
 
@@ -65,13 +66,13 @@ This can be seen in the following two figures from the datasheet which show how 
 
 Toshiba labels the second diagram above as "Electronic Shutter Function".  This refers to the function of ICG in selecting which SH interval is transferred to the readout buffer.  However it is not a shutter in the conventional sense.  It is easily shown experimentally that if the device is left idle, several SH cycles are needed to arrive at a noise level baseline in the readout.   There are a number of commerical CCD systems that clock the SH pin or its equivalent to keep the sensor "clean".  This can have important ramifications if the device is to be triggered, for example for kinetic studies.   Alternatives include good "dark" management, designing the experiment to start with a few blank frames to clear the sensor, and/or having the device initiate the trigger.
 
-In practice, we find that the clock, SH and ICG pins can be driven using logic gates or by the Teensy directly with equal reliability.  For cost and space we drive directly in the present example.  It is straightforward to add a quad logic gate to the design if you wish.
+The clock, SH and ICG pins can be driven using logic gates.  For some small savings in cost and space, the device seems to able to be driven directly by the Teensy.  Adding a quad gate is straightforward if you prefer.
 
-Toshiba further specifies timing requirements for the ICG and SH pins relative to each other and the master clock, in the following diagram from page 9 of the datasheet.  Note that this sets a minimum shutter period since the fastest shutter is between two trailing edges at the SH pin.
+The following diagram from page 9 of the datasheet shows the timing requirements for the ICG and SH pins relative to each other and the master clock.
 
 ![TCD1304-timingreqs](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6256bbf6-0993-47ce-8623-0f77907d3063)
 
-With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum rate, that is the time between readouts.  The integration time, the interval between SH assertions can be much shorter.
+With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum frame rate, that is the time between readouts, and is different from the minimum integration interval which depends only on the minimal interval between successive trailing edges at the SH pin.
 
 ## Shutter, frames and timing for data acquisition.
 For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to control timing with respect to an external trigger or gate.   For purposes of understanding our requirements we can focus on the SH pin since the shutter or integration interval is defined by successive assertions of this input.
