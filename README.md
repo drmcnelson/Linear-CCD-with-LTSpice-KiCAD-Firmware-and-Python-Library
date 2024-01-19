@@ -19,7 +19,7 @@ The following shows the microcontroller side of the device.  The sensor side can
 ### Spectrometer
 The first shows the inside of a spectrometer built with a G1200 grating, two lenses and a slit. The mounts are 3D printed and everything is affixed to a stiff Al plate. There is a cover, not shown here, and specific surfaces are covered with low-reflectance tape.  The spectrum is that of a fluorescent ceiling light through a 200um fiber at a distance of about 8ft, with a 200um slit.  The input circuit that we will describe in a moment, helps preserve dynamic range and precision.
 
-|![IMG_20231217_120419719 cropped350](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/df8263ad-cb4c-41de-bd71-2716a8124167)|![FluorescentLamp Screen500](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6d012101-5bae-4bd2-b496-b92bc3603f1b)|
+|![IMG_20231217_120419719 cropped350](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-LibP-doped metal oxide capacitorrary/assets/38619857/df8263ad-cb4c-41de-bd71-2716a8124167)|![FluorescentLamp Screen500](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6d012101-5bae-4bd2-b496-b92bc3603f1b)|
 
 ### Spectal-Spatial Imaging
 The following example uses the sensor device to record the time evolution of the spatial distribution of light produced by an OLED at a current density of 150 $\mu A/cm^2$. The sensor device collects a series of frames wth 10ms shutters at 10ms intervals (back to back), with the series initated on a trigger at the start of the applied voltage waveform. The blue line shows the resulting current density in the OLED, the pale line shows the sync pulses output by the sensor device at the start of each frame, and the red line is the applied voltage (2.41V).  (We plan to post repositories for the DAQ board and current amplifier as well.)
@@ -75,9 +75,9 @@ The following diagram from page 9 of the datasheet shows the timing requirements
 With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum frame rate, that is the time between readouts, and is different from the minimum integration interval which depends only on the minimal interval between successive trailing edges at the SH pin.
 
 ## Shutter, frames and timing for data acquisition.
-For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to reliably control timing with respect to an external trigger or gate.   For purposes of understanding our requirements we can focus on the SH pin since the shutter or integration interval is defined by successive assertions of this input.
+For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to reliably control timing with respect to an external trigger or gate.   Since the shutter or integration interval is defined by successive assertions of the SH pin, we focus on how these requirements translate to operation of this pin.
 
-The following diagram shows a sequence where the shutter interval is shorter than the inter frame interval, and the frame interval is not necessarily an integer number of shutter intervals in length.
+The following diagram shows a sequence where the shutter interval is shorter than the inter frame interval, and the frame interval is not necessarily an integer number of shutter intervals in length.  The SH pin operates with alternating short and long intervals.  The frame interval is the sum of these two intervals, or that betwen every second SH.
 
 ![Shutter-Operation-shortshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/2f8c72b0-5ce8-4873-b6db-025a604f5a09)
 
