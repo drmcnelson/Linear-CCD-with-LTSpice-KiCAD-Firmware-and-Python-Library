@@ -43,17 +43,13 @@ For best performance in digitizing the signal, we want a circuit that takes the 
 
 ![SimpleSchematic1](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/0bc8349a-38d2-42b1-843e-d70b2531a980)
 
-Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s. This means we can power our circuit from the 3.3V supply provided by the Teensy 3.x or Teensy 4.x, and the onboard ADC can keep up with the required datarate.  But to do that we need a rail to rail opamp with a wide common mode range to accomodate our offset voltage and a bandwidth substantially greater than our datarate.   Compatiblity with the 3.3V supply is a convenience of the TCD1304 relative to some other linear CCDs, that saves cost and space.
+Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s.  So, we can power our circuit from the 3.3V supply provided we select a rail to rail opamp with a sufficiently wide common mode range and sufficient fast slew, and the onboard ADC is fast enough for the readout.  Compatiblity with the 3.3V supply and sampling rate for the ADC saves space and cost.
 
 The following LTSpice model based on the ADA4807 seems to meet our goals.  We use the first opamp in the package for the follower and the second opamp for the flip.shift,amplify circuit with gain and offset as calculated above.  The green trace is the output from the sensor and the purple curve is the output from the second stage.  As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC.  In our actual circuit we use a trim pot for the voltage applied to V+.
 
 ![Screenshot from 2023-12-18 08-43-01](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/b380a297-6e34-4aad-a0bb-7b30448e554a)
 
-It might be noted that we could have chosen a larger gain to look at lower intensity light and still have a feasible value of V+.  Or as noted above, the output is compatible with the amplifier availble in the Teensy 3.x and various other microcontrollers.
-
-One final note on the front end circuit:  We mentioned above that we are going to be driving a SAR ADC and that there is a kickback associated with the first sample.  In our circuit design, we have an optional 1nf capacitor to ground after the output resistor to take care of the kickback.
-
-Caveat:  The devices built prior to this use a ADA4896 and 2K in the feedback loop for a gain of 4.  This part has a smaller common mode range, 0.1V to 2.1V when powered at 3V, which is cutting it a bit close for our purposes.  The ADA4807 is available in the same footprint and has a common mode range that is essentially rail to rail.  Hence we are switching to the ADA4807 for new builds.
+It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 the signal can be expanded using its built-in amplifier, provided the offset is small.
 
 # CCD operation
 
