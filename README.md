@@ -1,6 +1,6 @@
 
 # Introduction
-Linear CCDs can be useful tools in science, for example as a sensor for a spectrometer or imaging system.  And indeed, there are many commercial instruments that are based on low cost linear CCDs such as the Toshiba TC1304 and the Sony IXL511 Here we provide design files, firmware and software for a device that provides competitive performance and a rich set of science-centric features, and that can be customized to your experiments, all at a fraction of the cost of the commercial offerings.  The design is based on the Toshiba TCD1304 (3694 pixels) and Teensy 4.0, (600MHz ARM, 480MHz USB).  The Teensy 3.2 is plug compatible for this design.
+Linear CCDs can be useful tools in science, for example as a sensor for a spectrometer or imaging system.  And indeed, there are many commercial instruments that are based on low cost linear CCDs such as the Toshiba TC1304 and the Sony IXL511 Here we provide design files, firmware and software for a device that provides competitive performance and a rich set of science-centric features, and that can be customized to your experiments, all at a fraction of the cost of the commercial offerings.  The design is based on the Toshiba TCD1304 (3648/3694 pixels) and Teensy 4.0, (600MHz ARM, 480MHz USB).  The Teensy 3.2 is plug compatible for this design.
 
 In this repository you will find (a) electrical design files in KiCad, (b) firmware (a sketch file) for the Teensy, and (c) a Python class library with graphical and command line utilities to operate the device.
 There is a trigger or gate input, sync and busy outputs, and spare pins for digital and analog I/O.
@@ -53,7 +53,7 @@ It might be noted that we could have chosen a larger gain to look at lower inten
 
 # CCD operation
 
-Operationally, a CCD sensor stores charge proprotional to light and noise, in each pixel, until assertion of a shift pin causes the contents to be shifted to a buffer, which is then shifted to the output by a clock and the contents appear as a series of voltages.  The TCD1304 has an additional function that allows readout following selected shift assertions.
+Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be shifted to a buffer. The contents of the buffer is then shifted to the output by a clock and the contents appear as a series of voltages.  The TCD1304 has an additional function that controls which shift assertions initiate the readout sequence.
 The internal structure is depicted as follows from page 3.  Externally the device is controlled by three pins, shift SH, integration clear gate ICG, and master clock $\phi M$.
 
 ![TCD1304-registers](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1865363d-bbbe-4902-be47-285b8f0ef6f8)
