@@ -17,7 +17,7 @@ The following shows the microcontroller side of the device.  The sensor side can
 ## Some Example Use Cases
 
 ### Spectrometer
-The first shows the inside of a spectrometer built with a G1200 grating, two lenses and a slit. The mounts are 3D printed and everything is affixed to a stiff Al plate. There is a cover, not shown here, and specific surfaces are covered with low-reflectance tape.  The spectrum is that of a fluorescent ceiling light through a 200um fiber at a distance of about 8ft, with a 200um slit.  The input circuit that we will describe in a moment, helps preserve dynamic range and precision.
+The first shows the inside of a spectrometer built with a G1200 grating, two lenses and a slit. The mounts are 3D printed and everything is affixed to a stiff Al plate. There is a cover, not shown here, and specific surfaces are covered with low-reflectance tape.  The spectrum is that of a fluorescent ceiling light through a 200um fiber at a distance of about 8ft, with a 200um slit.
 
 |![IMG_20231217_120419719 cropped350](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/df8263ad-cb4c-41de-bd71-2716a8124167)|![FluorescentLamp Screen500](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6d012101-5bae-4bd2-b496-b92bc3603f1b)|
 
