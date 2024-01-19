@@ -75,13 +75,13 @@ The following diagram from page 9 of the datasheet shows the timing requirements
 With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum frame rate, that is the time between readouts, and is different from the minimum integration interval which depends only on the minimal interval between successive trailing edges at the SH pin.
 
 ## Shutter, frames and timing for data acquisition.
-For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to control timing with respect to an external trigger or gate.   For purposes of understanding our requirements we can focus on the SH pin since the shutter or integration interval is defined by successive assertions of this input.
+For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to reliably control timing with respect to an external trigger or gate.   For purposes of understanding our requirements we can focus on the SH pin since the shutter or integration interval is defined by successive assertions of this input.
 
-The following diagram shows a sequence where the shutter interval is shorter than the inter frame interval, and the frame interval is not necessarily an integer number of shutter intervals in length.  This removes us from the scenario where we simply run the SH line on a single clock, as does our requirements for triggering or gating the CCD with reproducible timing.
+The following diagram shows a sequence where the shutter interval is shorter than the inter frame interval, and the frame interval is not necessarily an integer number of shutter intervals in length.
 
 ![Shutter-Operation-shortshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/2f8c72b0-5ce8-4873-b6db-025a604f5a09)
 
-That said, there are scenarios where the shutter is somewhat simpler.  The following shows back to back shutters with identical frame and shutter intervals.
+The following shows back to back shutters with identical frame and shutter intervals.
 
 ![Shutter-Operation-longshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ff287173-09d6-4ee7-a6b2-3ac014f4b3f3)
 
