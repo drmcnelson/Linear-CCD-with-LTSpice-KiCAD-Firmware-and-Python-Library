@@ -15,7 +15,7 @@ The following shows the microcontroller side of the device.  The sensor side can
 
 Following are two examples, using the sensor in a spectrometer and measurement of spectral-spatial-dynamics in an OLED.  This repository provides what you need in terms of ecad files and software to build one for yourself, or if you like you can contact me for an assembled board.
 
-
+The files in the repo were produced on a Linux desktop computer (Fedora 37, Cinnamon Spin), using KiCAD 6 for the electrical design and Emacs for the firmware and python programs.
 
 ## Some Example Use Cases
 
