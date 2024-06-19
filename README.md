@@ -91,7 +91,7 @@ And this one shows a constant shutter interval with the frame interval an intege
 ![Shutter-Operation-modalshutter](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/040c281e-0778-4aa0-9e86-23f334caaec4)
 
 Our control logic for operating the device has to accomodate all three scenarios, and we have to be able to initiate frames or sets of frames from a clock or from a trigger.
-Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various comobinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
+Architecturally, we set this up as two ISRs, which we call ShutterA_isr() and ShutterB_isr().  The sequences are easily implemented by various combinations of A and B or just B after one A, and easily triggered, gated or clocked as needed.
 
 ## Signals, Sync and Busy
 The sensor device has a trigger input and two outputs SYNC and BUSY.  Sync can be configured to signal the start of a series of frames or to signal the start of each shutter.  SYNC can also be configured to be followed by a holdoff.  BUSY is set with the start of the first shutter and remains asserted until the last data transfer is complete.   Each pin can be set nominally HIGH or LOW, assertion is the opposite.  Additiionall there is a SPARE pin.  Any of the pins can be manually set, cleared, toggled or pulsed.
