@@ -2,7 +2,7 @@
 # Introduction
 Linear CCDs can be useful tools in science, for example as a sensor for a spectrometer or imaging system.  And indeed, there are many commercial instruments that are based on low cost linear CCDs such as the Toshiba TC1304 and the Sony IXL511.
 Here we provide design files, firmware and software for a device that provides competitive performance and a rich set of science-centric features, and that can be customized to your experiments, all at a fraction of the cost of the commercial offerings.  The design is based on the Toshiba TCD1304 (3648/3694 pixels) and Teensy 4.0 (600MHz ARM, 480MHz USB).  The Teensy 3.2 is plug compatible for this design.
-Read further below, and you will find tutorials on the electrical design, interfacing to the ADC in an MCU, and managing the CCD to provide flexible timing and reproducible measurements so that you can use it as a scientific instrument.
+Read further below, and you will find tutorials on electrical design and managing the CCD to provide flexible timing and reproducible measurements so that you can use it as a scientific instrument.
 
 In this repository you will find directories containing (a) electrical design files in KiCad, (b) firmware (a sketch file) for the Teensy, and (c) a Python class library with graphical and command line utilities to operate the device.
 The device has a trigger or gate input, sync and busy outputs, and spare pins for digital and analog I/O.
