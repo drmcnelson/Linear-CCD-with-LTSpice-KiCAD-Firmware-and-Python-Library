@@ -55,13 +55,33 @@ A solution to this is to us an opamp follower as the first stage, as shown in th
 
 ![TCD1304-opampfollower](https://github.com/user-attachments/assets/01444fcd-368b-4a48-a75c-3357dc1dcdea)
 
-Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s.  So, we can power our circuit from the 3.3V supply provided we select a rail to rail opamp with a sufficiently wide common mode range and sufficient fast slew, and the onboard ADC is fast enough for the readout.  Compatiblity with the 3.3V supply and sampling rate for the ADC saves space and cost.   However there is one proviso for the lower voltage which we will return to shortly when we discuss driving the shift and clear gates and the clock.
+Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s.
+So, we can power our circuit from the 3.3V supply provided we select a rail to rail opamp with a sufficiently wide common mode range and sufficient fast slew, and the onboard ADC is fast enough for the readout.
+Compatiblity with the 3.3V supply and sampling rate for the ADC saves space and cost.
+However there is one proviso for the lower voltage, clock rates operating under 4.0V are limited to 2.4MHz, and data rates are limited to 0.6MHz.
 
-The complete analog front end circuit is shown in the following LTSpice model based on the ADA4807.  We use the first opamp in the package as a follower, which isolates the varied impedance of the sensor from the rest of the circuit, and we use the second opamp for the flip, shift,and amplify stage.  Gain and offset are as calculated above.  The green trace is the output from the sensor and the purple curve is the output from the second stage.  As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC.  In our actual circuit we use a trim pot for the voltage applied to V+.
+The complete analog front end circuit is shown in the following LTSpice model based on the ADA4807.
+We use the first opamp in the package as a follower, which isolates the varied impedance of the sensor from the rest of the circuit, and we use the second opamp for the flip, shift,and amplify stage.
+Gain and offset are as calculated above.
+The green trace is the output from the sensor and the purple curve is the output from the second stage.
+As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC.
+In our actual circuit we use a trim pot for the voltage applied to V+.
+Importantly, we also see that the rise time is small on the 0.2usec scale shown in the SPICE model.
 
 ![Screenshot from 2023-12-18 08-43-01](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/b380a297-6e34-4aad-a0bb-7b30448e554a)
 
 It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 we can use its built-in amplifier under software control, provided the offset is small.
+
+## Analog input, Teensy 4.x and Teensy 3.2
+The following diagaram is from the K20 datasheet (the Teensy 3.2) and is nearly identical that in the datasheet for the i.MXRT106x (Teensy 4).
+For the T3, e RADIN = 2k and CADIN = 8pf in 16 bit mode, and so the analog input has a 16nsec time constant.
+For the T4, RADIN can be from 5k to 25k and CADIN = 1.5pF, in 12 bit mode, and thus 7.5nsecs to 40nsecs.
+Each pixel level from the TCD11304 lasts four clock cycles, or 2usecs.
+The analog input is timed in firmware to sample the "flat" of each pixel output from the sensor.
+
+![T3analoginput](https://github.com/user-attachments/assets/10ae87ce-2e72-4959-8f26-67fdcef17f1d)
+
+
 
 # CCD operation
 
@@ -81,26 +101,41 @@ Toshiba labels the second diagram above as "Electronic Shutter Function".  This 
 
 Note that it is the ICG pin that makes the readout available to be clocked out to the OS pin, while the SH pin sets the integration interval.  This seems reversed from the arrangement of buffers in the first diagram.   In practice, device operation agrees with the timing diagrams.
 
-The architecture with a PN photodiode sensing element and three pins and three steps in reading out the device might be seen as  somewhat analogous to an interline transfer type architecture.  There the PN photodiodes are first shifted in parallel each to their neighboring element in a "vertical" CCD buffer, charge is clocked along the vertical CCD bufers and at the end transferred to the corresponding element in a horizontal CCD buffer, and then a clock moves charge along the horizontal buffer until it reaches the output pin.
+## Driving the SH, ICG and Master Clock pins
+The architecture with a PN photodiode sensing element and three pins and three steps in reading out the device might be seen as  somewhat analogous to an interline transfer type architecture.  There the PN photodiodes are first shifted in parallel each to their neighboring "vertical" CCD buffer.  Charge is then clocked along the vertical CCD buffers, and line-by-line transfered to a horizontal CCD buffer and then clocked along the horizontal buffer until it reaches the output pin.
 
 In the TCD1304 we have one line, so in place of the vertical CCD we have a single buffer with one element per pixel and we need just one pulse to move it to the output buffer.  That four clock cycles are needed per pixel suggests that the output buffer is a 4-phase CCD.
 
-Referring again to the datasheet, page 6, we find the following table.   Notice that shift gate pin has a capacitance of 600pF and the integration clear gate has 250pF as might be expected understanding that the voltages applied to these pins move charge from the sensing element into the first buffer and then from that buffer to the CCD output buffer.
+Referring again to the datasheet, page 6, we find the following table.   Notice that shift gate pin has a capacitance of 600pF and the integration clear gate has 250pF.  These large capacitances suggest that the applied voltges are what moves charge from the sensing element into the first buffer and then from that buffer to the CCD output buffer.
 The large capacitances also factor into how we drive these pins.
 
 ![image](https://github.com/user-attachments/assets/b0cc4b91-a9f9-4a90-91d4-347e24e93084)
 
-Generally we want to drive the pins with a buffer gate and series resistor, as shown in the follower.  For a 3.3V drive, a 150 ohm resistor limits the current to 22mA.  A 74LVCnG34 is a good choose for the buffer, it can drive 25mA.  The rise time will be 90nsecs for the SH pin and 38nsecs for the ICG.
+Notice that the master clock and data transfer rates are reduced when operating at lower voltages.
+
+![image](https://github.com/user-attachments/assets/4048145d-1f1a-4894-bab4-06ee4319979c)
+
+Rise times with large capacitances are easily current limited.
+So, the preferred way to drive the pins is with a buffer gate and series resistor, as shown in the following.
+For a 3.3V drive, a 150 ohm resistor sets the rise to 90nsecs for the SH pin and limits the current to 22mA.
+For a 1 usec pulse, this gives a rise time that is less than 1/10 of the pulse width.  The buffer can be a 74LVC1G34, or one channel in a 74VLC3G34, which can drive 25mA.
 
 ![singlegate](https://github.com/user-attachments/assets/c67f9783-9346-4ee8-9e86-164fbfa76bcd)
 
-Alternatively, with all three channels of a 74LVC3G34 driving a total of 75mA, the rise time on the SH pin can be about 26nsecs.
+Alternatively, all three channels of a 74LVC3G34 can be combined as in the follower, to drive a total of 75mA.  In this configuration, the rise time on the SH pin can be about 26nsecs.
 
 ![triplegate](https://github.com/user-attachments/assets/308c0ed6-acde-4bdb-b933-d6d29510eb8a)
 
-For comparison, the Teensy digital I/O pins provide 4mA. That means the response is current limited with $\Delta t \approx C \Delta V / I$. That works out to 500nsecs, or about 1/2 of the 1 usec pulse.
+For comparison, the Teensy digital I/O pins provide 4mA.
+That means the response is current limited, $\Delta t \approx C \Delta V / I$.
+That works out to 500nsecs, or about 1/2 of the 1 usec pulse.
+That is long for a logic input, but the input pins for the TCD1304 seem to not actually be logic inputs as described above.
 
-In the repository, we have two board designs.  The original, driving the SH, ICG and master clock directly, and another driving the gates and master clocks with buffers.  Caveat, it is a simple modification from the other board, but as of this writing I have not yet actually built one of the second.  (Click the sponsor button if you like, when sponsorships match costs, I'll build some of them).
+In the repository, we have two board designs.
+The original, driving the SH, ICG and master clock directly, and another driving the gates and master clocks with buffers.
+
+Caveat, the buffer gate version is a simple modification from the direct-gate-drive board, but as of this writing I have not yet built one of these.
+(Click the sponsor button if you like, and send me a note. When sponsorships match costs, I'll build some and make then available).
 
 
 ## Frame rates, shutters and timing for data acquisition.
