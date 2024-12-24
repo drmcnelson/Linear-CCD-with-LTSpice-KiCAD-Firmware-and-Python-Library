@@ -36,7 +36,7 @@ The following example uses the sensor device to record the time evolution of the
 # Electrical Design, Analog
 The datasheet for the TCD1304 can be found here  https://toshiba.semicon-storage.com/us/semiconductor/product/linear-image-sensors/detail.TCD1304DG.html.
 The following table is found on page 4.
-We see that $V_{SAT}$ the saturation output volage runs from 450mV to 600mV, $V_{MDK}$ the dark signal is 2mV, thus a dynamic range of 300 (for a given integration integral), $V_{OS}$ the DC output signal is typically 2.5V but can be from 1.5V to 3.5V, and $Z_O$ the output impedance is typically 500 ohms but can be 1K.  So, that is a lot of variation that we need to account for in our design.
+We see that $V_{SAT}$ the saturation output volage runs from 450mV to 600mV, $V_{MDK}$ the dark signal is 2mV, thus a dynamic range of 300 (for a 10ms integration integral), $V_{OS}$ the DC output signal is typically 2.5V but can be from 1.5V to 3.5V, and $Z_O$ the output impedance is typically 500 ohms but can be 1K.  So, that is a lot of variation that we need to account for in our design.
 
 ![TCD1304-optical-electrical](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/7c0a2a66-d456-45e5-9f44-d4f6856260c5)
 
@@ -72,7 +72,7 @@ Importantly, we also see that the rise time is small on the 0.2usec scale shown 
 
 It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 we can use its built-in amplifier under software control, provided the offset is small.
 
-## Analog input, Teensy 4.x and Teensy 3.2
+## Analog input of the Teensy 4.x and Teensy 3.2
 The following diagaram is from the K20 datasheet (the Teensy 3.2) and is nearly identical that in the datasheet for the i.MXRT106x (Teensy 4).
 For the T3, e RADIN = 2k and CADIN = 8pf in 16 bit mode, and so the analog input has a 16nsec time constant.
 For the T4, RADIN can be from 5k to 25k and CADIN = 1.5pF, in 12 bit mode, and thus 7.5nsecs to 40nsecs.
@@ -80,6 +80,29 @@ Each pixel level from the TCD11304 lasts four clock cycles, or 2usecs.
 The analog input is timed in firmware to sample the "flat" of each pixel output from the sensor.
 
 ![T3analoginput](https://github.com/user-attachments/assets/10ae87ce-2e72-4959-8f26-67fdcef17f1d)
+
+## When do I need 16 bits?
+Notice that the Teensy 3.2 has a 16 bit analog input and the Teensy 4.0 has 12 bits.
+In the table above, the dynamic range at 300 is simply the sataturation output voltage 600mv divided by the dark signal 2mV.
+So on face value, 10 good bits would be enough and the T4 is a good match.
+But this dark signal is proportional to integration time.
+At an integration time of 100usecs, the dark signal is 20uV, and the dynamic range would be 30,000.
+That would put us in the range for a 16 bit ADC.
+But, will our analog front end meet that challenge?
+The datasheet for the ADA4807 lists the input voltage noise as $3.1 nV/\sqrt Hz$.
+At a sampling rate 500KSPS, we would expect 2.2uV of noise at the input and our gain of 5, brings us to 10uV.
+Without going into a more detailed analysis, we see that we electrical noise is already about 1/2 of the dark signal.
+So that is more or less the limit for this simple design, 100usec exposures perhaps with signal averaging. could use 16 bits.
+
+If you want a lower noise device, see my postings at
+[TCD1304 with 16 bit differential ADC for SPI](https://github.com/drmcnelson/TCD1304-SPI)
+and
+[S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code)
+
+The Hamamatsu has been built and tested.
+The TCD1304 with extra low noise 16 bit ADC, is waiting for sponsors.
+
+A cooled version of the TCD1304 is being designed and will be posted, and is also ready for sponsors.
 
 
 
