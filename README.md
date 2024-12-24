@@ -10,6 +10,8 @@ The operating modes include clocked, triggered frames, triggered series of frame
 The device appears as a serial port (COM in windows) with comands and response in human language ASCII and frames returned as binary or formatted.
 The python class library provides higher level functions, a graphical realtime display and a command line processor.  There is a help command in the firmware and in the Python command line interpreter.  Details of the electrical and firmware design are described later in this README.
 
+Since the original upload, we have added new sections on driving the shift and integration clear gates, the analog interface to the microcontroller, and precision (number of bits) versus integration time.
+
 The following shows the microcontroller side of the device.  The sensor side can be seen in the image of the spectrometer (below).   The digital I/O pins across the top include trigger input, sync and busy output, pins that monitor the signals going to the sensor, and spares that can be controlled through the user interface.  Across the bottom there are pins that can be used for analog inputs or digital I/O, and 3.3V that can be used for an auxiliary device.
 
 ![IMG_20231215_144019112_cropped250](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1eda6d73-2e27-4ffd-ba63-d32f814700c4)
@@ -42,11 +44,18 @@ The datasheet provides the following diagram in Note 8 to illustrate the definit
 
 ![TCD1304-electrical-note8](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ceaa5288-26fd-4485-ae8d-bf512b9fe894)
 
-For best performance in digitizing the signal, we want a circuit that takes the above signal as input and outputs a signal that matches the input range of our microcontroller's ADC.  The following circuit element shows one approach that does this and can run on a single supply. We can call this a shift, flip and amplify (SFA). The gain is set as usual for an inverting amplifier by $R_2$ and $R_1$ and the potentiometer provides the offset throughn the + input of the opamp.
+For best performance in digitizing the signal, we want a circuit that takes the above signal as input and outputs a signal that matches the input range of our microcontroller's ADC.  The following circuit element shows one approach that does this and can run on a single supply. We can call this a shift, flip and amplify (SFA). The gain is set as usual for an inverting amplifier by $R_2$ and $R_1$ and the potentiometer provides the offset through the + input of the opamp.
 
 ![SimpleSchematic1](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/0bc8349a-38d2-42b1-843e-d70b2531a980)
 
-Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s.  So, we can power our circuit from the 3.3V supply provided we select a rail to rail opamp with a sufficiently wide common mode range and sufficient fast slew, and the onboard ADC is fast enough for the readout.  Compatiblity with the 3.3V supply and sampling rate for the ADC saves space and cost.
+But, recall that the datasheet says the output impedance $Z_0$ varies from 500 ohms to 1k.  If we connect that directly to our SFA then $Z_0$ becomes part of the gain equation, $R1\rightarrow R1+Z_0$, and in a bag of sensors we might find that the gain is different for each sensor.
+So, we need to isolate that source impedance from the SFA.
+
+A solution to this is to us an opamp follower as the first stage, as shown in the following crcuit.  The follower presents a very high impedance at its input, which is ideal for reading the voltage from the sensor, and a low impedance at its output, which is ideal as an input to the SFA
+
+![TCD1304-opampfollower](https://github.com/user-attachments/assets/01444fcd-368b-4a48-a75c-3357dc1dcdea)
+
+Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s.  So, we can power our circuit from the 3.3V supply provided we select a rail to rail opamp with a sufficiently wide common mode range and sufficient fast slew, and the onboard ADC is fast enough for the readout.  Compatiblity with the 3.3V supply and sampling rate for the ADC saves space and cost.   However there is one proviso for the lower voltage which we will return to shortly when we discuss driving the shift and clear gates and the clock.
 
 The complete analog front end circuit is shown in the following LTSpice model based on the ADA4807.  We use the first opamp in the package as a follower, which isolates the varied impedance of the sensor from the rest of the circuit, and we use the second opamp for the flip, shift,and amplify stage.  Gain and offset are as calculated above.  The green trace is the output from the sensor and the purple curve is the output from the second stage.  As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC.  In our actual circuit we use a trim pot for the voltage applied to V+.
 
