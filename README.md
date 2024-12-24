@@ -33,7 +33,7 @@ The following example uses the sensor device to record the time evolution of the
 
 |![SampleR1 51 D7_G100K_A2 410v_I0 010s_D0 500s_N005_T4 0C_M17 0000mm_W501 340nm 20230309 080608 827395 tdaq2](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/93a6eb79-6a26-4ebe-8d46-3b25e46819c1)|![SampleR1 51 D7_G100K_A2 410v_I0 010s_D0 500s_N005_T4 0C surface cropped](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/c7ad51c5-3052-4c0e-905a-4b4ebf87df7e)|
 
-# Electrical Design
+# Electrical Design, Analog
 The datasheet for the TCD1304 can be found here  https://toshiba.semicon-storage.com/us/semiconductor/product/linear-image-sensors/detail.TCD1304DG.html.
 The following table is found on page 4.
 We see that $V_{SAT}$ the saturation output volage runs from 450mV to 600mV, $V_{MDK}$ the dark signal is 2mV, thus a dynamic range of 300 (for a given integration integral), $V_{OS}$ the DC output signal is typically 2.5V but can be from 1.5V to 3.5V, and $Z_O$ the output impedance is typically 500 ohms but can be 1K.  So, that is a lot of variation that we need to account for in our design.
@@ -65,7 +65,8 @@ It might be noted that we could have chosen a larger gain to look at lower inten
 
 # CCD operation
 
-Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be shifted to a buffer. The contents of the buffer is then shifted to the output by a clock and the contents appear as a series of voltages.  The TCD1304 has an additional function that controls which shift assertions initiate the readout sequence.
+Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be transferred to a buffer and then the contents are shifted along the buffer by a clock to the output pin and appear as a series of voltages.
+The TCD1304 has an additional function that controls which shift assertions initiate the readout sequence.
 The internal structure is depicted as follows from page 3.  Externally the device is controlled by three pins, shift SH, integration clear gate ICG, and master clock $\phi M$.
 
 ![TCD1304-registers](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1865363d-bbbe-4902-be47-285b8f0ef6f8)
@@ -78,15 +79,37 @@ The following two figures from the datasheet show how Toshiba envisions operatio
 
 Toshiba labels the second diagram above as "Electronic Shutter Function".  This refers to the function of ICG in selecting which SH interval is transferred to the readout buffer.  However it is not a shutter in the conventional sense.  It is easily shown experimentally that if the device is left idle, several SH cycles are needed to arrive at a noise level baseline in the readout.   There are a number of commerical CCD systems that clock the SH pin or its equivalent to keep the sensor "clean".  This can have important ramifications if the device is to be triggered, for example for kinetic studies.   Alternatives include good "dark" management, designing the experiment to start with a few blank frames to clear the sensor, and/or having the device initiate the trigger.
 
-The clock, SH and ICG pins should be driven using logic gates. The 74LVC1G34 is a good choice and with a 100 ohm resistor in series, can give you a rise time of about 60ns for the SH pin and 25ns for the ICG.  Nonetheless, the device is often driven directly by the Teensy.
+Note that it is the ICG pin that makes the readout available to be clocked out to the OS pin, while the SH pin sets the integration interval.  This seems reversed from the arrangement of buffers in the first diagram.   In practice, device operation agrees with the timing diagrams.
 
+The architecture with a PN photodiode sensing element and three pins and three steps in reading out the device might be seen as  somewhat analogous to an interline transfer type architecture.  There the PN photodiodes are first shifted in parallel each to their neighboring element in a "vertical" CCD buffer, charge is clocked along the vertical CCD bufers and at the end transferred to the corresponding element in a horizontal CCD buffer, and then a clock moves charge along the horizontal buffer until it reaches the output pin.
+
+In the TCD1304 we have one line, so in place of the vertical CCD we have a single buffer with one element per pixel and we need just one pulse to move it to the output buffer.  That four clock cycles are needed per pixel suggests that the output buffer is a 4-phase CCD.
+
+Referring again to the datasheet, page 6, we find the following table.   Notice that shift gate pin has a capacitance of 600pF and the integration clear gate has 250pF as might be expected understanding that the voltages applied to these pins move charge from the sensing element into the first buffer and then from that buffer to the CCD output buffer.
+The large capacitances also factor into how we drive these pins.
+
+![image](https://github.com/user-attachments/assets/b0cc4b91-a9f9-4a90-91d4-347e24e93084)
+
+Generally we want to drive the pins with a buffer gate and series resistorm, as shown in the follower.  For a 3.3V drive, a 150 ohm resistor limits the current to 22mA.  A 74LVCnG34 is a good choose for the buffer, it can drive 25mA.  The rise time will be 90nsecs for the SH pin and 38nsecs for the ICG.
+
+![singlegate](https://github.com/user-attachments/assets/c67f9783-9346-4ee8-9e86-164fbfa76bcd)
+
+Alternatively, with all three channels of a 74LVC3G34 driving 75mA, the rise time on the SH pin will be about 26nsecs.
+
+![triplegate](https://github.com/user-attachments/assets/308c0ed6-acde-4bdb-b933-d6d29510eb8a)
+
+For comparison, the Teensy digital I/O pins provide 4mA. That means current determines the rise time, with $\Delta t \approx C \Delta V / I$. That works out to 500nsecs, or about 1/2 of the 1 usec pulse.  So, it does work to some extent.
+
+In the repository, we have two board designs.  The original, driving the SH, ICG and master clock directly, and another driving the gates and master clocks with buffers.  Caveat, it is a simple modification from the other board, but as of this writing I have not yet actually built one of the second.  (Click the sponsor button if you like, when sponsorships match costs, I'll build some of them).
+
+
+## Frame rates, shutters and timing for data acquisition.
 The following diagram from page 9 of the datasheet shows the timing requirements for the ICG and SH pins relative to each other and the master clock.
 
 ![TCD1304-timingreqs](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/6256bbf6-0993-47ce-8623-0f77907d3063)
 
 With a 2MHz master clock, it takes about 7.4ms to read one record from the device into the memory of the microcontroller.  Transfer from the microcontroller to the host PC can take an additional 5ms for the Teensy 3.x (12 Mb/s) or about 120usec with the Teensy 4.x (480 Mb/s).  Needless to say, this sets the maximum frame rate, that is the time between readouts, and is different from the minimum integration interval which depends only on the minimal interval between successive trailing edges at the SH pin.
 
-## Shutter, frames and timing for data acquisition.
 For data collection, we need to be able to set integration and frame intervals freely (within the physical limits of the sensor) and we need to be able to reliably control timing with respect to an external trigger or gate.   Since the shutter or integration interval is defined by successive assertions of the SH pin, we focus on how these requirements translate to operation of this pin.
 
 The following diagram shows a sequence where the shutter interval is shorter than the inter frame interval, and the frame interval is not necessarily an integer number of shutter intervals in length.  The SH pin operates with alternating short and long intervals.  The frame interval is the sum of these two intervals, or that betwen every second SH.
