@@ -90,15 +90,15 @@ The large capacitances also factor into how we drive these pins.
 
 ![image](https://github.com/user-attachments/assets/b0cc4b91-a9f9-4a90-91d4-347e24e93084)
 
-Generally we want to drive the pins with a buffer gate and series resistorm, as shown in the follower.  For a 3.3V drive, a 150 ohm resistor limits the current to 22mA.  A 74LVCnG34 is a good choose for the buffer, it can drive 25mA.  The rise time will be 90nsecs for the SH pin and 38nsecs for the ICG.
+Generally we want to drive the pins with a buffer gate and series resistor, as shown in the follower.  For a 3.3V drive, a 150 ohm resistor limits the current to 22mA.  A 74LVCnG34 is a good choose for the buffer, it can drive 25mA.  The rise time will be 90nsecs for the SH pin and 38nsecs for the ICG.
 
 ![singlegate](https://github.com/user-attachments/assets/c67f9783-9346-4ee8-9e86-164fbfa76bcd)
 
-Alternatively, with all three channels of a 74LVC3G34 driving 75mA, the rise time on the SH pin will be about 26nsecs.
+Alternatively, with all three channels of a 74LVC3G34 driving a total of 75mA, the rise time on the SH pin can be about 26nsecs.
 
 ![triplegate](https://github.com/user-attachments/assets/308c0ed6-acde-4bdb-b933-d6d29510eb8a)
 
-For comparison, the Teensy digital I/O pins provide 4mA. That means current determines the rise time, with $\Delta t \approx C \Delta V / I$. That works out to 500nsecs, or about 1/2 of the 1 usec pulse.  So, it does work to some extent.
+For comparison, the Teensy digital I/O pins provide 4mA. That means the response is current limited with $\Delta t \approx C \Delta V / I$. That works out to 500nsecs, or about 1/2 of the 1 usec pulse.
 
 In the repository, we have two board designs.  The original, driving the SH, ICG and master clock directly, and another driving the gates and master clocks with buffers.  Caveat, it is a simple modification from the other board, but as of this writing I have not yet actually built one of the second.  (Click the sponsor button if you like, when sponsorships match costs, I'll build some of them).
 
