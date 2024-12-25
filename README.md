@@ -40,7 +40,7 @@ We see that $V_{SAT}$ the saturation output volage runs from 450mV to 600mV, $V_
 
 ![TCD1304-optical-electrical](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/7c0a2a66-d456-45e5-9f44-d4f6856260c5)
 
-The datasheet provides the following diagram in Note 8 to illustrate the definition of $V_{OS}$.  The hatched area is the negative going output signal.  SS is ground.
+The datasheet provides the following diagram in Note 8 to illustrate the definition of $V_{OS}$.  The hatched area is the negative going output signal.  SS is ground
 
 ![TCD1304-electrical-note8](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/ceaa5288-26fd-4485-ae8d-bf512b9fe894)
 
@@ -73,31 +73,38 @@ It might be noted that we could have chosen a larger gain to look at lower inten
 
 ## Analog input of the Teensy 4.x and Teensy 3.2
 The following diagaram and one similar to this, are found in the datasheets for the i.MXRT106x (Teensy 4) and the K20 (Teensy 3).
-Full precision is achieved if the voltage across the sampling capacitor is within 1 LSB of the input voltage by the end of the sampling window, when the voltage is latched and converted to a binary value.
-For n-bit precision we need $\Delta t > -RC ln(2^{-n})$, which means 11 x RC for 16 bits and 8 x RC for 12 bits.
-For the T3 in 16 bit mode, with RADIN = 2k, and CADIN = 8pf, RC ~ 16nsecs and we need 176 seconds to for CADIN to be within 1/2^16 of the input voltage.
-For the T4 in 12 bit mode, RADIN can be from 5k to 25k, CADIN is 1.5pF, RC ~ 7.5nsecs to 40nsecs and we need 60nsecs to 320nsecs.
-Both are compatible with a 500KSPS sample.
-The cost for the high precision input is that the T3 has slower 1MB/s transfers over USB.
-Readout takes 7.8msecs and transfer over USB takes another 7.8msecs for a total of 16.6msecs.
-For the T4, transfer over the USB at 60MB/s takes less than 150usecs.
+Full precision is achieved if the voltage across the sampling capacitor is within 1 LSB of the input voltage by the end of the sampling window.
+At that point, the voltage is latched and converted to a binary value.
 
 ![T3analoginput](https://github.com/user-attachments/assets/10ae87ce-2e72-4959-8f26-67fdcef17f1d)
+
+For n-bit precision we need the sampling window to be at least $t_{sampling} > -RC ln(2^{-n})$.
+This works out to be 11 x RC for 16 bits and 8 x RC for 12 bits.
+
+For the T3 in 16 bit mode, with RADIN = 2k, and CADIN = 8pf, RC ~ 16nsecs.
+The voltage on the sampling capacitor is within $1/2^16$ of the input voltage after about 170nsecs.
+
+For the T4 in 12 bit mode, RADIN can be from 5k to 25k and CADIN is 1.5pF, RC ~ 7.5nsecs to 40nsecs.
+We need about 60nsecs to 320nsecs to reach 12 bit precision.
+
+Thus both the T3 and T4 are compatible with a 500KSPS sample.
+The tradeoff is that the T3 has a much slower USB interface,  with 1MB/s transfers to the host.
+The best frame to frame interval is about 16msecs.
 
 ## When do I need 16 bits?
 In the table above, the dynamic range is listed as 300.
 This is simply the saturation output voltage 600mv divided by the dark signal 2mV.
 On face value, 10 good bits would be enough and the T4 is a good match.
-This is improved in two ways, by using shorter exposures since dark noise is proportioinal to expsorue time, and by cooling the sensor.
+This is improved in two ways, by using shorter exposures since dark noise is proportional to exposure time, and by cooling the sensor.
 
 At a modestly shorter exposure time, 100usecs, the dark signal is 20uV, and the dynamic range becomes 30,000.
-That means we would need electrical noise smallerer than  20uV and at least as 16 bit ADC, perhaps with signal averaging.
+That brings us in range of needing a 16 bit ADC, provided dark noise is the principle source of noise.
 
-The ADA4807 used in our front end, has input voltage noise of $3.1 nV/\sqrt Hz$.
-At 500KSPS, we expect 2.2uV of noise at the input.
-With a gain of 5, we should see 10uV of noise in our data.
-Without going into a more detailed analysis, we see that 10uV of electrical noise is already about 1/2 of the dark signal.
-So for this design, 100usec exposures perhaps with signal averaging. could use 16 bits.
+Our analog section uses the ADA4807, which has input voltage noise of $3.1 nV/\sqrt Hz$.
+At 500KSPS this becomes 2.2uV of noise at the input.
+And then, with a gain of 5, the electrical noise can be 10uV.
+Without going into a more detailed analysis, we see that our electrical noise can be about 1/2 of the dark signal.
+That is workable with some signal averaging.
 
 Special lower noise sensor designs, with differential signal paths and ADC are posted at
 [TCD1304 with 16 bit differential ADC for SPI](https://github.com/drmcnelson/TCD1304-SPI)
