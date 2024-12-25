@@ -82,7 +82,7 @@ For n-bit precision we need the sampling window to be at least $t_{sampling} > -
 This works out to be 11 x RC for 16 bits and 8 x RC for 12 bits.
 
 For the T3 in 16 bit mode, with RADIN = 2k, and CADIN = 8pf, RC ~ 16nsecs.
-The voltage on the sampling capacitor is within $1/2^16$ of the input voltage after about 170nsecs.
+The voltage on the sampling capacitor is within $1/2^{16}$ of the input voltage after about 170nsecs.
 
 For the T4 in 12 bit mode, RADIN can be from 5k to 25k and CADIN is 1.5pF, RC ~ 7.5nsecs to 40nsecs.
 We need about 60nsecs to 320nsecs to reach 12 bit precision.
