@@ -55,59 +55,60 @@ A solution to this is to us an opamp follower as the first stage, as shown in th
 
 ![TCD1304-opampfollower](https://github.com/user-attachments/assets/01444fcd-368b-4a48-a75c-3357dc1dcdea)
 
-Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s.
-So, we can power our circuit from the 3.3V supply provided we select a rail to rail opamp with a sufficiently wide common mode range and sufficient fast slew, and the onboard ADC is fast enough for the readout.
-Compatiblity with the 3.3V supply and sampling rate for the ADC saves space and cost.
-However there is one proviso for the lower voltage, clock rates operating under 4.0V are limited to 2.4MHz, and data rates are limited to 0.6MHz.
+Referring again to the datasheet for the TCD1304, we see that (a) we can operate the sensor chip in the range 3V to 5.5V, (b) it requires a clock between 800KHz and 4MHz (2MHz if operated below 4V) and (c) the data readout rate is 1/4 of the clock 200kS/s to 1MS/s (500KS/S if powered below 4V).
+Operating with a 3.3V supply, and making efficient use of the full scale range of the ADC,  means that we need to use a rail to rail opamp.
+Our SFA architecture means that the opamp has to also have a wide common mode range. 
+And the sampling rate means we need to look for a slew at least as faster as 100V/usec
 
 The complete analog front end circuit is shown in the following LTSpice model based on the ADA4807.
-We use the first opamp in the package as a follower, which isolates the varied impedance of the sensor from the rest of the circuit, and we use the second opamp for the flip, shift,and amplify stage.
+We use the first opamp in the package for the voltage follower and the second opamp for the flip, shift,and amplify stage.
 Gain and offset are as calculated above.
 The green trace is the output from the sensor and the purple curve is the output from the second stage.
-As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC.
+As can be seen the 2.5V to 1.9V signal from the sensor becomes a 0.1V to 3.1V for the ADC, and the rise time is small compared to the sampling period.
 In our actual circuit we use a trim pot for the voltage applied to V+.
-Importantly, we also see that the rise time is small on the 0.2usec scale shown in the SPICE model.
 
 ![Screenshot from 2023-12-18 08-43-01](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/b380a297-6e34-4aad-a0bb-7b30448e554a)
 
 It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 we can use its built-in amplifier under software control, provided the offset is small.
 
 ## Analog input of the Teensy 4.x and Teensy 3.2
-The following diagaram is from the K20 datasheet (the Teensy 3.2) and is nearly identical that in the datasheet for the i.MXRT106x (Teensy 4).
-For the T3, e RADIN = 2k and CADIN = 8pf in 16 bit mode, and so the analog input has a 16nsec time constant.
-For the T4, RADIN can be from 5k to 25k and CADIN = 1.5pF, in 12 bit mode, and thus 7.5nsecs to 40nsecs.
-Each pixel level from the TCD11304 lasts four clock cycles, or 2usecs.
-The analog input is timed in firmware to sample the "flat" of each pixel output from the sensor.
+The following diagaram and one similar to this, are found in the datasheets for the i.MXRT106x (Teensy 4) and the K20 (Teensy 3).
+Full precision is achieved if the voltage across the sampling capacitor is within 1 LSB of the input voltage by the end of the sampling window, when the voltage is latched and converted to a binary value.
+For n-bit precision we need $\Delta t > -RC ln(2^{-n})$, which means 11 x RC for 16 bits and 8 x RC for 12 bits.
+For the T3 in 16 bit mode, with RADIN = 2k, and CADIN = 8pf, RC ~ 16nsecs and we need 176 seconds to for CADIN to be within 1/2^16 of the input voltage.
+For the T4 in 12 bit mode, RADIN can be from 5k to 25k, CADIN is 1.5pF, RC ~ 7.5nsecs to 40nsecs and we need 60nsecs to 320nsecs.
+Both are compatible with a 500KSPS sample.
+The cost for the high precision input is that the T3 has slower 1MB/s transfers over USB.
+Readout takes 7.8msecs and transfer over USB takes another 7.8msecs for a total of 16.6msecs.
+For the T4, transfer over the USB at 60MB/s takes less than 150usecs.
 
 ![T3analoginput](https://github.com/user-attachments/assets/10ae87ce-2e72-4959-8f26-67fdcef17f1d)
 
 ## When do I need 16 bits?
-Notice that the Teensy 3.2 has a 16 bit analog input and the Teensy 4.0 has 12 bits.
-In the table above, the dynamic range at 300 is simply the sataturation output voltage 600mv divided by the dark signal 2mV.
-So on face value, 10 good bits would be enough and the T4 is a good match.
-But this dark signal is proportional to integration time.
-At an integration time of 100usecs, the dark signal is 20uV, and the dynamic range would be 30,000.
-That would put us in the range for a 16 bit ADC.
-But, will our analog front end meet that challenge?
-The datasheet for the ADA4807 lists the input voltage noise as $3.1 nV/\sqrt Hz$.
-At a sampling rate 500KSPS, we would expect 2.2uV of noise at the input and our gain of 5, brings us to 10uV.
-Without going into a more detailed analysis, we see that we electrical noise is already about 1/2 of the dark signal.
-So that is more or less the limit for this simple design, 100usec exposures perhaps with signal averaging. could use 16 bits.
+In the table above, the dynamic range is listed as 300.
+This is simply the saturation output voltage 600mv divided by the dark signal 2mV.
+On face value, 10 good bits would be enough and the T4 is a good match.
+This is improved in two ways, by using shorter exposures since dark noise is proportioinal to expsorue time, and by cooling the sensor.
 
-If you want a lower noise device, see my postings at
+At a modestly shorter exposure time, 100usecs, the dark signal is 20uV, and the dynamic range becomes 30,000.
+That means we would need electrical noise smallerer than  20uV and at least as 16 bit ADC, perhaps with signal averaging.
+
+The ADA4807 used in our front end, has input voltage noise of $3.1 nV/\sqrt Hz$.
+At 500KSPS, we expect 2.2uV of noise at the input.
+With a gain of 5, we should see 10uV of noise in our data.
+Without going into a more detailed analysis, we see that 10uV of electrical noise is already about 1/2 of the dark signal.
+So for this design, 100usec exposures perhaps with signal averaging. could use 16 bits.
+
+Special lower noise sensor designs, with differential signal paths and ADC are posted at
 [TCD1304 with 16 bit differential ADC for SPI](https://github.com/drmcnelson/TCD1304-SPI)
 and
 [S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code)
 
-The Hamamatsu has been built and tested.
-The TCD1304 with extra low noise 16 bit ADC, is waiting for sponsors.
-
-A cooled version of the TCD1304 is being designed and will be posted, and is also ready for sponsors.
-
-
+The first of these is waiting for a sponsor for first build.
+The latter with the Hamamatsu sensor, has been built and tested.
+A cooled version of the TCD1304 is being designed and will be posted soon.
 
 # CCD operation
-
 Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be transferred to a buffer and then the contents are shifted along the buffer by a clock to the output pin and appear as a series of voltages.
 The TCD1304 has an additional function that controls which shift assertions initiate the readout sequence.
 The internal structure is depicted as follows from page 3.  Externally the device is controlled by three pins, shift SH, integration clear gate ICG, and master clock $\phi M$.
