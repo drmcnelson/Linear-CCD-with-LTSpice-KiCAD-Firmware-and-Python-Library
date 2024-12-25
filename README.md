@@ -72,14 +72,23 @@ In our actual circuit we use a trim pot for the voltage applied to V+.
 It might be noted that we could have chosen a larger gain to look at lower intensity light, or with the Teensy 3.2 we can use its built-in amplifier under software control, provided the offset is small.
 
 ## Analog input of the Teensy 4.x and Teensy 3.2
-The following diagaram and one similar to this, are found in the datasheets for the i.MXRT106x (Teensy 4) and the K20 (Teensy 3).
-Full precision is achieved if the voltage across the sampling capacitor is within 1 LSB of the input voltage by the end of the sampling window.
-At that point, the voltage is latched and converted to a binary value.
+The following diagaram for the analog input, and one similar to this, are found in the datasheets for the i.MXRT106x (Teensy 4) and the K20 (Teensy 3).
+This is a modified version of a SAR type analog input.  Normally the input sees the switched sampling capacitor.
+Here there is a series resistor in front of the sampling capacitor.
 
 ![T3analoginput](https://github.com/user-attachments/assets/10ae87ce-2e72-4959-8f26-67fdcef17f1d)
 
-For n-bit precision we need the sampling window to be at least $t_{sampling} > -RC ln(2^{-n})$.
-This works out to be 11 x RC for 16 bits and 8 x RC for 12 bits.
+In operation, the switch closes for a period of time to allow the capacitor to draw charge from the input.
+At the end of the sampling period the switch is opened and the voltage on the capacitor is converted to a digital representation in the successive approximation register (SAR).
+In other words, precision is determined by the length of the sampling window (in time) versus the RC time constant seen by the sampling capacitor.
+Full precision means the voltage on the capacitor is within 1 LSB of the input, at the end of the sampling window.
+
+For a simple RC network, the voltage on the capacitor is $V(t)/V(0) = 1 - exp(-t/RC)$.
+Therefore, for n bits of precision, the sampling window needs to be at least $ln(2^{n}) \times RC$.
+This works out to be 11 x RC for 16 bits and 8 x RC for 12 bits. 
+The following shows this graphically.
+
+![samplingtime](https://github.com/user-attachments/assets/6a794891-e235-473a-8f6f-eafbd615cedd)
 
 For the T3 in 16 bit mode, with RADIN = 2k, and CADIN = 8pf, RC ~ 16nsecs.
 The voltage on the sampling capacitor is within $1/2^{16}$ of the input voltage after about 170nsecs.
@@ -87,22 +96,24 @@ The voltage on the sampling capacitor is within $1/2^{16}$ of the input voltage 
 For the T4 in 12 bit mode, RADIN can be from 5k to 25k and CADIN is 1.5pF, RC ~ 7.5nsecs to 40nsecs.
 We need about 60nsecs to 320nsecs to reach 12 bit precision.
 
-Thus both the T3 and T4 are compatible with a 500KSPS sample.
-The tradeoff is that the T3 has a much slower USB interface,  with 1MB/s transfers to the host.
-The best frame to frame interval is about 16msecs.
+Thus the T3 and T4 are both compatible at 500KSPS.  See the [ADC library](https://github.com/pedvide/ADC) for details setting the sampling time and conversion clock.
+
+The tradeoff for the T3 with its 16 bit input, is that the T3 has a much slower USB interface, 1MB/s transfers to the host versus 60MB/s for the T4.
+The best frame to frame interval with the T3 is about 16msecs and about 8msecs for the T4.
+
+N.B.  Driving the analog input of an MCU is different from driving a normal SAR type ADC.  Normally, the drive circuit for a SAR includes an external capacitor to serve as a charge reservoir for the sampling capacitor.  This is pre-empted in the MCU analog input by the large internal resistance in series with the sampling capacitor.
 
 ## When do I need 16 bits?
 In the table above, the dynamic range is listed as 300.
 This is simply the saturation output voltage 600mv divided by the dark signal 2mV.
 On face value, 10 good bits would be enough and the T4 is a good match.
-This is improved in two ways, by using shorter exposures since dark noise is proportional to exposure time, and by cooling the sensor.
+This is improved in two ways, by using shorter exposures since dark noise is proportional to exposure time, or by cooling the sensor.
 
 At a modestly shorter exposure time, 100usecs, the dark signal is 20uV, and the dynamic range becomes 30,000.
-That brings us in range of needing a 16 bit ADC, provided dark noise is the principle source of noise.
+For those short exxposures we need a 16 bit ADC, provided we are limited only by the dark noise.
 
-Our analog section uses the ADA4807, which has input voltage noise of $3.1 nV/\sqrt Hz$.
-At 500KSPS this becomes 2.2uV of noise at the input.
-And then, with a gain of 5, the electrical noise can be 10uV.
+Our analog section uses an ADA4807.  Its datasheet lists the input voltage noise as $3.1 nV/\sqrt Hz$.
+At 500KSPS this becomes 2.2uV, and setting the gain at 5, we expect 10uV.
 Without going into a more detailed analysis, we see that our electrical noise can be about 1/2 of the dark signal.
 That is workable with some signal averaging.
 
@@ -110,15 +121,13 @@ Special lower noise sensor designs, with differential signal paths and ADC are p
 [TCD1304 with 16 bit differential ADC for SPI](https://github.com/drmcnelson/TCD1304-SPI)
 and
 [S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code)
-
-The first of these is waiting for a sponsor for first build.
-The latter with the Hamamatsu sensor, has been built and tested.
-A cooled version of the TCD1304 is being designed and will be posted soon.
+We plan to upload a repo with a cooled sensor and a special high precision adc, in the near future.
+The Hamamatsu board has been built and tested.  The first and third can be moved forward with sponsorship.
 
 # CCD operation
 Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be transferred to a buffer and then the contents are shifted along the buffer by a clock to the output pin and appear as a series of voltages.
 The TCD1304 has an additional function that controls which shift assertions initiate the readout sequence.
-The internal structure is depicted as follows from page 3.  Externally the device is controlled by three pins, shift SH, integration clear gate ICG, and master clock $\phi M$.
+The internal structure is depicted as follows from page 3 of its datasheet.  Externally the device is controlled by three pins, shift SH, integration clear gate ICG, and master clock $\phi M$.
 
 ![TCD1304-registers](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1865363d-bbbe-4902-be47-285b8f0ef6f8)
 
@@ -133,36 +142,33 @@ Toshiba labels the second diagram above as "Electronic Shutter Function".  This 
 Note that it is the ICG pin that makes the readout available to be clocked out to the OS pin, while the SH pin sets the integration interval.  This seems reversed from the arrangement of buffers in the first diagram.   In practice, device operation agrees with the timing diagrams.
 
 ## Driving the SH, ICG and Master Clock pins
-The architecture with a PN photodiode sensing element and three pins and three steps in reading out the device might be seen as  somewhat analogous to an interline transfer type architecture.  There the PN photodiodes are first shifted in parallel each to their neighboring "vertical" CCD buffer.  Charge is then clocked along the vertical CCD buffers, and line-by-line transfered to a horizontal CCD buffer and then clocked along the horizontal buffer until it reaches the output pin.
-
-In the TCD1304 we have one line, so in place of the vertical CCD we have a single buffer with one element per pixel and we need just one pulse to move it to the output buffer.  That four clock cycles are needed per pixel suggests that the output buffer is a 4-phase CCD.
-
-Referring again to the datasheet, page 6, we find the following table.   Notice that shift gate pin has a capacitance of 600pF and the integration clear gate has 250pF.  These large capacitances suggest that the applied voltges are what moves charge from the sensing element into the first buffer and then from that buffer to the CCD output buffer.
-The large capacitances also factor into how we drive these pins.
+Referring again to the datasheet, page 6, we find the following table.
+Notice that the shift gate has a capacitance of 600pF and the integration clear gate has 250pF.
+From the magnitude of the capacitances, we might guess that these are closely related to moving charge into the first buffer and then to the output buffer.
 
 ![image](https://github.com/user-attachments/assets/b0cc4b91-a9f9-4a90-91d4-347e24e93084)
 
-Notice that the master clock and data transfer rates are reduced when operating at lower voltages.
+Notice also, that the master clock and data transfer rates are reduced when operating at lower voltages.
 
 ![image](https://github.com/user-attachments/assets/4048145d-1f1a-4894-bab4-06ee4319979c)
 
-Rise times with large capacitances are easily current limited.
-So, the preferred way to drive the pins is with a buffer gate and series resistor, as shown in the following.
+The large capacitances also factor into how we drive these pins, rise times with large capacitances are easily current limited.
+The preferred way to drive the gate pins is with a buffer and series resistor, as shown in the following.
 For a 3.3V drive, a 150 ohm resistor sets the rise to 90nsecs for the SH pin and limits the current to 22mA.
-For a 1 usec pulse, this gives a rise time that is less than 1/10 of the pulse width.  The buffer can be a 74LVC1G34, or one channel in a 74VLC3G34, which can drive 25mA.
+For a 1 usec pulse, this gives a rise time that is less than 1/10 of the pulse width.
+The buffer can be a 74LVC1G34, or one channel of a 74VLC3G34, which can drive 25mA.
 
 ![singlegate](https://github.com/user-attachments/assets/c67f9783-9346-4ee8-9e86-164fbfa76bcd)
 
-Alternatively, all three channels of a 74LVC3G34 can be combined as in the follower, to drive a total of 75mA.  In this configuration, the rise time on the SH pin can be about 26nsecs.
+Alternatively, all three channels of a 74LVC3G34 can be combined as in the following, to drive a total of 75mA.  In this configuration, the rise time on the SH pin can be about 26nsecs.
 
 ![triplegate](https://github.com/user-attachments/assets/308c0ed6-acde-4bdb-b933-d6d29510eb8a)
 
 For comparison, the Teensy digital I/O pins provide 4mA.
-That means the response is current limited, $\Delta t \approx C \Delta V / I$.
+If the gate is driven directly from the Teensy, the response is current limited, $\Delta t \approx C \Delta V / I$.
 That works out to 500nsecs, or about 1/2 of the 1 usec pulse.
-That is long for a logic input, but the input pins for the TCD1304 seem to not actually be logic inputs as described above.
 
-In the repository, we have two board designs.
+In this repository, we have uploaded two board designs.
 The original, driving the SH, ICG and master clock directly, and another driving the gates and master clocks with buffers.
 
 Caveat, the buffer gate version is a simple modification from the direct-gate-drive board, but as of this writing I have not yet built one of these.
