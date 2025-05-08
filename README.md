@@ -131,20 +131,20 @@ The internal structure is depicted as follows from page 3 of its datasheet.  Ext
 
 ![TCD1304-registers](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1865363d-bbbe-4902-be47-285b8f0ef6f8)
 
-The following two figures from the datasheet show how Toshiba envisions operation of the sensor chip.  As indicated, charge is integrated during the intervals between trailing edges at the SH pin. At each assertion of the ICG pin the accumulated charges are shifted to the readout buffer and then shifted to the output pin at a rate of 1 datum per four cycles of the master clock.
+The following two figures from the datasheet show how Toshiba envisions operation of the sensor chip.  As indicated, charge is integrated during the intervals between trailing edges at the SH pin. When the the ICG pin is low the accumulated charges are available in the readout buffer and then shifted to the output pin at a rate of 1 datum per four cycles of the master clock.
 
 ![TCD1304-timing1](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/e0c361c6-3cdb-4eb6-9314-ea43b90607dd)
 
 ![TCD1304-timing2](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/18aa49f5-0524-4cec-be0e-52a2ee25068b)
 
-Toshiba labels the second diagram above as "Electronic Shutter Function".  This refers to the function of ICG in selecting which SH interval is transferred to the readout buffer.  However it is not a shutter in the conventional sense.  It is easily shown experimentally that if the device is left idle, several SH cycles are needed to arrive at a noise level baseline in the readout.   There are a number of commerical CCD systems that clock the SH pin or its equivalent to keep the sensor "clean".  This can have important ramifications if the device is to be triggered, for example for kinetic studies.   Alternatives include good "dark" management, designing the experiment to start with a few blank frames to clear the sensor, and/or having the device initiate the trigger.
+Toshiba labels the second diagram above as "Electronic Shutter Function".  This refers to the function of ICG in selecting which SH assertion results in charge being available in the readout buffer.  However it is not a shutter in the conventional sense.  It is easily shown experimentally that if the device is left idle, several SH cycles are needed to arrive at a noise level baseline in the readout.   There are a number of commerical CCD systems that clock the SH pin or its equivalent to keep the sensor "clean".  This can have important ramifications if the device is to be triggered, for example for kinetic studies.   Alternatives include good "dark" management, designing the experiment to start with a few blank frames to clear the sensor, and/or having the device initiate the trigger.
 
-Note that it is the ICG pin that makes the readout available to be clocked out to the OS pin, while the SH pin sets the integration interval.  This seems reversed from the arrangement of buffers in the first diagram.   In practice, device operation agrees with the timing diagrams.
+Note that it is the low state on the ICG pin that makes the readout available to be clocked out to the OS pin, while the SH pin sets the integration interval.
 
 ## Driving the SH, ICG and Master Clock pins
 Referring again to the datasheet, page 6, we find the following table.
 Notice that the shift gate has a capacitance of 600pF and the integration clear gate has 250pF.
-From the magnitude of the capacitances, we might guess that these are closely related to moving charge into the first buffer and then to the output buffer.
+From the magnitude of the capacitances, we might guess that these are closely related to moving charge to the output buffer.
 
 ![image](https://github.com/user-attachments/assets/b0cc4b91-a9f9-4a90-91d4-347e24e93084)
 
