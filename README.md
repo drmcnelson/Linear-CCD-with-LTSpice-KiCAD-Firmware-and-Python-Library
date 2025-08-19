@@ -101,26 +101,24 @@ The best frame to frame interval with the T3 is about 16msecs and about 8msecs f
 
 N.B.  Driving the analog input of an MCU is different from driving a normal SAR type ADC.  Normally, the drive circuit for a SAR includes an external capacitor to serve as a charge reservoir for the sampling capacitor.  This is pre-empted in the MCU analog input by the large internal resistance in series with the sampling capacitor.
 
-## When do I need 16 bits?
+## How many bits do I really need?
 In the table above, the dynamic range is listed as 300.
 This is simply the saturation output voltage 600mv divided by the dark signal 2mV.
-On face value, 10 good bits would be enough and the T4 is a good match.
-This is improved in two ways, by using shorter exposures since dark noise is proportional to exposure time, or by cooling the sensor.
+If that were the limit, then 10 good bits would be enough.
 
-At a modestly shorter exposure time, 100usecs, the dark signal is 20uV, and the dynamic range becomes 30,000.
-For those short exxposures we need a 16 bit ADC, provided we are limited only by the dark noise.
+In principle the dark noise should scale with exposure time or by cooling.  Emperically, using a special low noise linear radiometric design, we find that the noise floor for the TCD1304 seems to be at about 0.6mV which it reaches for exposures below about 10msec.  Modest cooling to 4C is reported elsewhere to reduce noise by a factor of 4.  So, we can estimate a practical limit for the dynamic range at about 4,000, or 12 bits.  That is what is offered by the T4 ADC.  If you want to do signal averaging, and given the usual performance specs of ADCs, it is reasonable to have some extra bits, and so a 16 bit ADC is a good choice for a high performance system.
 
 Our analog section uses an ADA4807.  Its datasheet lists the input voltage noise as $3.1 nV/\sqrt Hz$.
-At 500KSPS this becomes 2.2uV, and setting the gain at 5, we expect 10uV.
+At 500KSPS this becomes 2.2uV, and setting the gain at 5, we expect 10uV.  So, we are well ahead of the noise floor for the device.
 Without going into a more detailed analysis, we see that our electrical noise can be about 1/2 of the dark signal.
 That is workable with some signal averaging.
 
-Special lower noise sensor designs, with differential signal paths and ADC are posted at
-[TCD1304 with 16 bit differential ADC for SPI](https://github.com/drmcnelson/TCD1304-SPI)
+Our high performance designs with differential signal paths and ADC are posted at
+[TCD1304 for linear photometric response with 16bit ADC]([https://github.com/drmcnelson/TCD1304-SPI](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility))
 and
-[S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code)
+[S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code).
+ Both of these have been built and tested.
 We plan to upload a repo with a cooled sensor and a special high precision adc, in the near future.
-The Hamamatsu board has been built and tested.  The first and third can be moved forward with sponsorship.
 
 # CCD operation
 Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be transferred to a buffer and then the contents are shifted along the buffer by a clock to the output pin and appear as a series of voltages.
