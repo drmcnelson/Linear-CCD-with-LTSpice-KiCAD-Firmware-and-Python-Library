@@ -168,11 +168,8 @@ For comparison, the Teensy digital I/O pins provide 4mA.
 If the gate is driven directly from the Teensy, the response is current limited, $\Delta t \approx C \Delta V / I$.
 That works out to 500nsecs, or about 1/2 of the 1 usec pulse.
 
-In this repository, we have uploaded two board designs.
-The original, driving the SH, ICG and master clock directly, and another driving the gates and master clocks with buffers.
-
-Caveat, the buffer gate version is a simple modification from the direct-gate-drive board, but as of this writing I have not yet built one of these.
-(Click the sponsor button if you like, and send me a note. When sponsorships match costs, I'll build some and make then available).
+However, driving the gates from the digital I/O pins works, provided the pulse timing is lengthened sufficient to accomodate a current limited pulse rise time.
+For a TCD1304 board with buffer drivers, see our repo ![here](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility).   An alternate version of the present design with buffer drivers and support for the FlexPWM is in test at this writing.
 
 
 ## Frame rates, shutters and timing for data acquisition.
