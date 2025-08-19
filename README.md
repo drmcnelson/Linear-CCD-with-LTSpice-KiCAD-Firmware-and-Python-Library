@@ -114,11 +114,11 @@ Without going into a more detailed analysis, we see that our electrical noise ca
 That is workable with some signal averaging.
 
 Our high performance designs with differential signal paths and ADC are posted at
-[TCD1304 for linear photometric response with 16bit ADC]([https://github.com/drmcnelson/TCD1304-SPI](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility))
+[TCD1304 for linear photometric response with 16bit ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility)
 and
 [S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code).
  Both of these have been built and tested.
-We plan to upload a repo with a cooled sensor and a special high precision adc, in the near future.
+We plan to upload a repo with a cooled sensor in the near future.
 
 # CCD operation
 Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be transferred to a buffer and then the contents are shifted along the buffer by a clock to the output pin and appear as a series of voltages.
