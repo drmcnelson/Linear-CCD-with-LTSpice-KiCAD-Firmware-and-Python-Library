@@ -10,8 +10,6 @@ The operating modes include clocked, triggered frames, triggered series of frame
 The device appears as a serial port (COM in windows) with comands and response in human language ASCII and frames returned as binary or formatted.
 The python class library provides higher level functions, a graphical realtime display and a command line processor.  There is a help command in the firmware and in the Python command line interpreter.  Details of the electrical and firmware design are described later in this README.
 
-Since the original upload, we have added new sections on driving the shift and integration clear gates, the analog interface to the microcontroller, and precision (number of bits) versus integration time.
-
 The following shows the microcontroller side of the device.  The sensor side can be seen in the image of the spectrometer (below).   The digital I/O pins across the top include trigger input, sync and busy output, pins that monitor the signals going to the sensor, and spares that can be controlled through the user interface.  Across the bottom there are pins that can be used for analog inputs or digital I/O, and 3.3V that can be used for an auxiliary device.
 
 ![IMG_20231215_144019112_cropped250](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1eda6d73-2e27-4ffd-ba63-d32f814700c4)
