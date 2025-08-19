@@ -13,7 +13,7 @@ The python class library provides higher level functions, a graphical realtime d
 The following shows the microcontroller side of the device.  The sensor side can be seen in the image of the spectrometer (below).   The digital I/O pins across the top include trigger input, sync and busy output, pins that monitor the signals going to the sensor, and spares that can be controlled through the user interface.  Across the bottom there are pins that can be used for analog inputs or digital I/O, and 3.3V that can be used for an auxiliary device.
 
 ![IMG_20231215_144019112_cropped250](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1eda6d73-2e27-4ffd-ba63-d32f814700c4)
-
+$o.gpl
 
 Following are two examples of applications; using the sensor in a spectrometer and measurement of spectral-spatial-dynamics in an OLED.  This repository provides what you need in terms of ecad files and software to build one for yourself, or if you like you can contact me for an assembled board.
 
@@ -156,16 +156,12 @@ The buffer can be a 74LVC1G34, or one channel of a 74VLC3G34, which can drive 25
 
 ![singlegate](https://github.com/user-attachments/assets/c67f9783-9346-4ee8-9e86-164fbfa76bcd)
 
-Alternatively, all three channels of a 74LVC3G34 can be combined as in the following, to drive a total of 75mA.  In this configuration, the rise time on the SH pin can be about 26nsecs.
-
-![triplegate](https://github.com/user-attachments/assets/308c0ed6-acde-4bdb-b933-d6d29510eb8a)
-
 For comparison, the Teensy digital I/O pins provide 4mA.
 If the gate is driven directly from the Teensy, the response is current limited, $\Delta t \approx C \Delta V / I$.
-That works out to 500nsecs, or about 1/2 of the 1 usec pulse.
+That works out to 500nsecs.
 
-However, driving the gates from the digital I/O pins works, provided the pulse timing is lengthened sufficient to accomodate a current limited pulse rise time.
-For a TCD1304 board with buffer drivers, see our repo ![here](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility).   An alternate version of the present design with buffer drivers and support for the FlexPWM is in test at this writing.
+Nonetheless, driving the gates from the digital I/O pins does work, provided the pulse duration is sufficient to accomodate the current limited pulse rise time.
+For a TCD1304 board with fast buffer drivers, see our repo ![here](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility).   An alternate version of the present design with buffer drivers and support for the FlexPWM is in test at this writing.
 
 
 ## Frame rates, shutters and timing for data acquisition.
