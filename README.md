@@ -1,4 +1,3 @@
-
 # Introduction
 Linear CCDs can be useful tools in science, for example as a sensor for a spectrometer or imaging system.  And indeed, there are many commercial instruments that are based on low cost linear CCDs such as the Toshiba TC1304 and the Sony IXL511.
 Here we provide design files, firmware and software for a device that provides competitive performance and a rich set of science-centric features, and that can be customized to your experiments, all at a fraction of the cost of the commercial offerings.  The design is based on the Toshiba TCD1304 (3648/3694 pixels) and Teensy 4.0 (600MHz ARM, 480MHz USB).  The Teensy 3.2 is plug compatible for this design.
@@ -49,7 +48,7 @@ For best performance in digitizing the signal, we want a circuit that takes the 
 But, recall that the datasheet says the output impedance $Z_0$ varies from 500 ohms to 1k.  If we connect that directly to our SFA then $Z_0$ becomes part of the gain equation, $R1\rightarrow R1+Z_0$, and in a bag of sensors we might find that the gain is different for each sensor.
 So, we need to isolate that source impedance from the SFA.
 
-A solution to this is to us an opamp follower as the first stage, as shown in the following crcuit.  The follower presents a very high impedance at its input, which is ideal for reading the voltage from the sensor, and a low impedance at its output, which is ideal as an input to the SFA
+A solution to this is to use an opamp follower as the first stage, as shown in the following crcuit.  The follower presents a very high impedance at its input, which is ideal for reading the voltage from the sensor, and a low impedance at its output, which is ideal as an input to the SFA
 
 ![TCD1304-opampfollower](https://github.com/user-attachments/assets/01444fcd-368b-4a48-a75c-3357dc1dcdea)
 
@@ -106,19 +105,19 @@ In the table above, the dynamic range is listed as 300.
 This is simply the saturation output voltage 600mv divided by the dark signal 2mV.
 If that were the limit, then 10 good bits would be enough.
 
-In principle the dark noise should scale with exposure time or by cooling.  Emperically, using a special low noise linear radiometric design, we find that the noise floor for the TCD1304 seems to be at about 0.6mV which it reaches for exposures below about 10msec.  Modest cooling to 4C is reported elsewhere to reduce noise by a factor of 4.  So, we can estimate a practical limit for the dynamic range at about 4,000, or 12 bits.  That is what is offered by the T4 ADC.  If you want to do signal averaging, and given the usual performance specs of ADCs, it is reasonable to have some extra bits, and so a 16 bit ADC is a good choice for a high performance system.
+In principle the dark noise should scale with exposure time or by cooling.  Emperically, using a special low noise linear radiometric design(*), we find that the noise floor for the TCD1304 seems to be at about 0.6mV which it reaches for exposures below about 10msec.  Modest cooling to 4C is reported elsewhere to reduce noise by a factor of 4.  So, we can estimate a practical limit for the dynamic range at about 4,000, or 12 bits.  That is what is offered by the T4 ADC.  If you want to do signal averaging, and given the usual performance specs of ADCs, it is reasonable to have some extra bits, and so a 16 bit ADC is a good choice for a high performance system.
 
 Our analog section uses an ADA4807.  Its datasheet lists the input voltage noise as $3.1 nV/\sqrt Hz$.
 At 500KSPS this becomes 2.2uV, and setting the gain at 5, we expect 10uV.  So, we are well ahead of the noise floor for the device.
 Without going into a more detailed analysis, we see that our electrical noise can be about 1/2 of the dark signal.
 That is workable with some signal averaging.
 
-Our high performance designs with differential signal paths and ADC are posted at
-[TCD1304 for linear photometric response with 16bit ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility)
+(*) Our high performance designs with differential signal paths and ADC are posted at
+[TCD1304 for linear photometric response with 16bit differential ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility)
 and
 [S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code).
- Both of these have been built and tested.
-We plan to upload a repo with a cooled sensor in the near future.
+ Both of these have been built and tested and the repos now have all of the gerbers, bom, firmware and user code.
+We plan to upload a repo with a cooled sensor in the near future.   The other advantage of those designs is that they are two board systems and provide better mechanical isolation if your are changing cables after alignment.  But, the design posted here offers sufficient precision and has fewer parts (i.e., it costs less and takes less time to build).
 
 # CCD operation
 Operationally, a CCD sensor stores charge in each pixel proportional to light and noise, until assertion of a shift pin causes the contents to be transferred to a buffer and then the contents are shifted along the buffer by a clock to the output pin and appear as a series of voltages.
