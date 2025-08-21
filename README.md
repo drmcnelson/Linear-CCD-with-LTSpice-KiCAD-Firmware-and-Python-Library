@@ -113,7 +113,7 @@ Without going into a more detailed analysis, we see that our electrical noise ca
 That is workable with some signal averaging.
 
 (*) Our high performance designs with differential signal paths and ADC are posted at
-[TCD1304 for linear photometric response with 16 bit differential ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility)
+[TCD1304 Sensor Device with Linear Response and 16 bit Differential ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC)
 and
 [S11639-01 with 16 bit differentual ADC for SPI](https://github.com/drmcnelson/S11639-01-Linear-CCD-PCB-and-Code).
  Both of these have been built and tested and the repos now have all of the gerbers, bom, firmware and user code.
