@@ -12,7 +12,6 @@ The python class library provides higher level functions, a graphical realtime d
 The following shows the microcontroller side of the device.  The sensor side can be seen in the image of the spectrometer (below).   The digital I/O pins across the top include trigger input, sync and busy output, pins that monitor the signals going to the sensor, and spares that can be controlled through the user interface.  Across the bottom there are pins that can be used for analog inputs or digital I/O, and 3.3V that can be used for an auxiliary device.
 
 ![IMG_20231215_144019112_cropped250](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library/assets/38619857/1eda6d73-2e27-4ffd-ba63-d32f814700c4)
-$o.gpl
 
 Following are two examples of applications; using the sensor in a spectrometer and measurement of spectral-spatial-dynamics in an OLED.  This repository provides what you need in terms of ecad files and software to build one for yourself, or if you like you can contact me for an assembled board.
 
