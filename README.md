@@ -19,7 +19,7 @@ The files in the repo were produced on a Linux desktop computer (Fedora 37, Cinn
 
 <ul>
  <i>
-For next level designs and a preview of our study on linearity and reproducibility in CCDs see our new repo at [TCD1304 with linear response and 16bit ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC). We suggest perusing both this and the new repo and selecting the implementation that best serves your needs.  Feel free to contact me with questions.
+For next level designs and a preview of our study on linearity and reproducibility in CCDs see our new repo at <a href=https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC>TCD1304 with linear response and 16bit ADC</a>. We suggest perusing both this and the new repo and selecting the implementation that best serves your needs.  Feel free to contact me with questions.
  </i>
 </ul>
 
