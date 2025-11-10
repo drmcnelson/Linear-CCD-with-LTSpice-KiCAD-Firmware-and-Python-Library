@@ -1,7 +1,7 @@
 # Introduction
 Linear CCDs can be useful tools in science, for example as a sensor for a spectrometer or imaging system.  And indeed, there are many commercial instruments that are based on low cost linear CCDs such as the Toshiba TC1304 and the Sony IXL511.
 Here we provide design files, firmware and software for a device that provides competitive performance and a rich set of science-centric features, and that can be customized to your experiments, all at a fraction of the cost of the commercial offerings.  The design is based on the Toshiba TCD1304 (3648/3694 pixels) and Teensy 4.0 (600MHz ARM, 480MHz USB).  The Teensy 3.2 is plug compatible for this design.
-Read further below, and you will find tutorials on electrical design and managing the CCD to provide flexible timing and reproducible measurements so that you can use it as a scientific instrument
+Read further below, and you will find tutorials on electrical design and managing the CCD to provide flexible timing and reproducible measurements so that you can use it as a scientific instrument.
 
 In this repository you will find directories containing (a) electrical design files in KiCad, (b) firmware (a sketch file) for the Teensy, and (c) a Python class library with graphical and command line utilities to operate the device.
 The device has a trigger or gate input, sync and busy outputs, and spare pins for digital and analog I/O.
@@ -17,7 +17,11 @@ Following are two examples of applications; using the sensor in a spectrometer a
 
 The files in the repo were produced on a Linux desktop computer (Fedora 37, Cinnamon Spin), using KiCAD 6 for the electrical design and Emacs for the firmware and python programs.
 
-Update:  The subject of linearity and reproducibility in CCDs and the TCD1304 in particular is taken up in our new repo, which can be found [here](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC).   This readme is still a good introduction to signal processing for the TCD1304.  We suggest perusing both readmes and select the implementation that best serves your needs.  Feel free to contact me with questions.
+<ul>
+ <i>
+For next level designs and a preview of our study on linearity and reproducibility in CCDs see our new repo at [TCD1304 with linear response and 16bit ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC). We suggest perusing both this and the new repo and selecting the implementation that best serves your needs.  Feel free to contact me with questions.
+ </i>
+</ul>
 
 ## Some Example Use Cases
 
