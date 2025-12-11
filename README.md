@@ -163,11 +163,11 @@ The buffer can be a 74LVC1G34, or one channel of a 74VLC3G34, which can drive 25
 For comparison, the Teensy digital I/O pins provide 4mA.
 If the gate is driven directly from the Teensy, the response is current limited, $\Delta t \approx C \Delta V / I$.
 That works out to 500nsecs.
-So, driving the gates from the digital I/O pins does work, provided the pulse duration is sufficient to accomodate the current limited pulse rise time.
+So, driving the gates from the digital I/O pins can work, if you can accomodate the longer pulse duration needed for the current limited pulse rise time.
 
-In this repo we provide two sub-directories for designs for the all-in-one TCD1304 and Teensy, with and without the 74VLC3G34.  The first has been in use in our lab for a few years.  The second has the 25mA gate driver and adds mounting holes.  We are waiting for a volunteer to build it.
+In this repo we provide two sub-directories for designs for the all-in-one TCD1304 and Teensy, with and without the 25mA pulse driver (74VLC3G34).  The verion with 25mA gate drivers is the preferred version.  The KiCad files for that versoin are [here](TCD1304Rev2GDKiCAD).
 
-For a TCD1304 board with faster higher current gate drivers and enhanced control of pulse characteristics and timing use the Teensy's FLexPWM, see our repo ![here](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility).
+For our high-end board with 16 bit ADC and faster timing, see our repo ![here](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility).
 
 ## Frame rates, shutters and timing for data acquisition.
 The following diagram from page 9 of the datasheet shows the timing requirements for the ICG and SH pins relative to each other and the master clock.
