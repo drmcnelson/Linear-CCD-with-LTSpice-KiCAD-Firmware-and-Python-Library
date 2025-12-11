@@ -165,7 +165,7 @@ If the gate is driven directly from the Teensy, the response is current limited,
 That works out to 500nsecs.
 So, driving the gates from the digital I/O pins can work, if you can accomodate the longer pulse duration needed for the current limited pulse rise time.
 
-In this repo we provide two sub-directories for designs for the all-in-one TCD1304 and Teensy, with and without the 25mA pulse driver (74VLC3G34).  The verion with 25mA gate drivers is the preferred version.  The KiCad files for that versoin are [here](TCD1304Rev2GDKiCAD).
+In this repo we provide two sub-directories for designs for the all-in-one TCD1304 and Teensy, with and without the 25mA pulse driver (74VLC3G34).  The verion with 25mA gate drivers is the preferred version.  The KiCad files for that version are [here](TCD1304Rev2GDKiCAD).
 
 For our high-end board with 16 bit ADC and faster timing, see our repo ![here](https://github.com/drmcnelson/TCD1304-Sensor-Device-Designed-for-Linear-Response-and-Reproducibility).
 
