@@ -1,4 +1,12 @@
-# Introduction
+# Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library
+
+<br>
+
+> **Note:** For the **16-bit high-linearity version** designed for quantitative science, please see our latest repository: [TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC).
+
+<br>
+
+## Introduction
 Linear CCDs can be useful tools in science, for example as a sensor for a spectrometer or imaging system.  And indeed, there are many commercial instruments that are based on low cost linear CCDs such as the Toshiba TC1304 and the Sony IXL511.
 Here we provide design files, firmware and software for a device that provides competitive performance and a rich set of science-centric features, and that can be customized to your experiments, all at a fraction of the cost of the commercial offerings.  The design is based on the Toshiba TCD1304 (3648/3694 pixels) and Teensy 4.0 (600MHz ARM, 480MHz USB).  The Teensy 3.2 is plug compatible for this design.
 Read further below, and you will find tutorials on electrical design and managing the CCD to provide flexible timing and reproducible measurements so that you can use it as a scientific instrument.
