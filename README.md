@@ -1,4 +1,5 @@
 # Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library
+by Dr M C Nelson (C) 20220-2026 [(the authoritative repo is here)](https://github.com/drmcnelson/Linear-CCD-with-LTSpice-KiCAD-Firmware-and-Python-Library)
 
 <br>
 
