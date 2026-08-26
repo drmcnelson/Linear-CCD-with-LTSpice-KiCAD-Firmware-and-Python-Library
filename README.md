@@ -3,7 +3,7 @@ by Dr M C Nelson (C) 20220-2026 [(the authoritative repo is here)](https://githu
 
 <br>
 
-> **Note:** For the **16-bit high-linearity version** designed for quantitative science along with an implenentation of the present all-in-one design with hardware locked timing using the FlexPWM , please see our latest repository: [TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC).
+> **Note:** For the **high-linearity version** designed for quantitative science along with an implementation of the present all-in-one design with hardware locked timing (using the FlexPWM), please see the updated design in our latest repository: [TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC](https://github.com/drmcnelson/TCD1304-Sensor-Device-with-Linear-Response-and-16-Bit-Differential-ADC).
 
 <br>
 
